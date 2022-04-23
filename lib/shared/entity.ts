@@ -1,15 +1,24 @@
-import { v4 as uuid } from 'uuid';
+import { UniqueEntityId } from './unique_entity_id';
 
 const isEntity = (v: any): v is Entity<any> => {
 	return v instanceof Entity;
 };
 
+/**
+ * Base entity class used on all the entities.
+ *
+ * Entities are objects that we determine their are unique because
+ * of their `id`s.
+ *
+ * It cannot exist two entities with the same id. If you prefer to
+ * not use an id, then use a `ValueObject`.
+ */
 export abstract class Entity<T> {
-	protected readonly _id: string;
+	protected readonly _id: UniqueEntityId;
 	public readonly props: T;
 
-	constructor(props: T, id?: string) {
-		this._id = id ? id : uuid();
+	constructor(props: T, id?: UniqueEntityId) {
+		this._id = id ? id : new UniqueEntityId();
 		this.props = props;
 	}
 
