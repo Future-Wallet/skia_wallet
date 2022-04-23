@@ -1,13 +1,20 @@
-import { Result, Ok } from 'ts-results';
+import { Result, Ok, Err } from 'ts-results';
 import { Entity } from '../shared/entity';
+import { Guard } from '../shared/guard';
+import { UniqueEntityId } from '../shared/unique_entity_id';
+import { AccountAddress } from './account_address';
 
-interface AccountProps {
+export interface AccountProps {
 	email: string;
 	password: string;
+	publicAddress: AccountAddress;
 }
 
 export class Account extends Entity<AccountProps> {
-	get id(): string {
+	/**
+	 * The identifier is the same as the public address of the account.
+	 */
+	get id(): UniqueEntityId {
 		return this._id;
 	}
 
@@ -18,13 +25,27 @@ export class Account extends Entity<AccountProps> {
 	get password(): string {
 		return this.props.password;
 	}
-	private constructor(props: AccountProps, id?: string) {
+
+	get publicAddress(): AccountAddress {
+		return this.props.publicAddress;
+	}
+
+	private constructor(props: AccountProps, id?: UniqueEntityId) {
 		super(props, id);
 	}
 
-	public static create(props: AccountProps, id?: string): Result<Account, any> {
-		// TODO: add value objects (for validating the fields email and password).
-		// If there's an error, return Err()
+	public static create(
+		props: AccountProps,
+		id?: UniqueEntityId
+	): Result<Account, string> {
+		const nullGuard = Guard.againstNullOrUndefinedBulk([
+			{ argument: props.email, argumentName: 'email' },
+			{ argument: props.password, argumentName: 'password' },
+		]);
+
+		if (!nullGuard.succeeded) {
+			return Err(nullGuard.message!);
+		}
 
 		return Ok<Account>(new Account(props, id));
 	}
