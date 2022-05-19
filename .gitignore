@@ -13,6 +13,9 @@
 ###########################
 ######### The rest
 
+# Environment variables (API keys, API secrets...)
+.env
+
 # Testing
 **/coverage
 
