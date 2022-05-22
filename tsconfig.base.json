@@ -1,0 +1,48 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@skiawallet/common": [
+        "packages/common/src/index.ts"
+      ],
+      "@skiawallet/entities": [
+        "packages/entities/src/index.ts"
+      ],
+      "@skiawallet/repositories": [
+        "packages/repositories/src/index.ts"
+      ],
+      "@skiawallet/ui-components": [
+        "packages/ui-components/src/index.ts"
+      ],
+      "@skiawallet/ui-wallat": [
+        "packages/presentation/src/index.ts"
+      ]
+    },
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
+}

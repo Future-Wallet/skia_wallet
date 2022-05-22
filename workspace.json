@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "common": "packages/common",
+    "entities": "packages/entities",
+    "repositories": "packages/repositories",
+    "ui-components": "packages/ui-components",
+    "ui-wallet": "packages/ui-wallet"
+  }
+}
