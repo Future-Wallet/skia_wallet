@@ -19,12 +19,25 @@ Part of the code in the entities is inspired by [Khalil Stemmler](https://khalil
 
 ## Start programming
 
+### How to manage the monorepo?
 To manage the monorepo, we use [Nx by Nrwl](https://nx.dev/). What to consider?
 
 - [How Nx works?](https://nx.dev/using-nx/mental-model)
 - Command `@nrwl/workspace` for renaming, moving, removing... the packages. More info [here](https://nx.dev/packages/workspace)
 - Command `@nrwl/react` about using the React components. More info [here](https://nx.dev/packages/react)
 - Command `@nrwl/next` about using NextJS. More info [here](https://nx.dev/packages/next)
+
+### Set up the project on your computer
+
+1. Install on you computer the latest stable verions of NodeJS. To download it, we recommend to do through the Node Version Manager, or also called [NVM](https://github.com/nvm-sh/nvm).
+2. Install the npm package `nx` globally with `npm install -g nx`.
+3. Clone this project on you local machine `git clone https://github.com/Future-Wallet/skia-wallet.git`
+4. Environment variables
+   - (For NodeJS packages) They need to be stored at the root directory in a file called `.env.local` or `.env`. Each variable needs to start with `NIX_XXX_XXX` (e.g. `NX_SDK_APP_ID_TEST`). More info on [nix.dev](https://nx.dev/guides/environment-variables)
+
+### Run the website
+
+1. (From the root directory) Run locally the wallet `nx run ui-wallet:serve` (you can see `ui-wallet` is the name of one of our packages; you can find the `serve` in the file `project.json` of that package). The console will run NextJS and will show you the localhost URL (e.g `http://localhost:4200`)
 
 ## To-Do
 
