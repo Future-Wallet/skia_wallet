@@ -1,7 +1,7 @@
 // This code uses npx create-next-app --example with-tailwindcss to init repository
 // Steps to run this page:
-// open console and npx create-next-app --example with-tailwindcss name-of-app
-// yarn or npm install bip39 ethers
+// open console and npx create-next-app --example with-tailwindcss name-of-app or just npx-create-next-app name-of-app
+// yarn or npm install bip39 ethers tailwindcss
 // Do: npm run dev on console to init on localhost:3000
 
 import type { NextPage } from 'next'
