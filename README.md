@@ -35,6 +35,37 @@ To manage the monorepo, we use [Nx by Nrwl](https://nx.dev/). What to consider?
 4. Environment variables
    - (For NodeJS packages) They need to be stored at the root directory in a file called `.env.local` or `.env`. Each variable needs to start with `NIX_XXX_XXX` (e.g. `NX_SDK_APP_ID_TEST`). More info on [nix.dev](https://nx.dev/guides/environment-variables)
 
+### Run npm scripts inside layers
+
+1. Add the command in the package's `package.json`. For example:
+
+```json
+"name": "@skiawallet/repositories",
+"scripts": {
+   "dev": "ts-node src/__dev.ts"
+}
+```
+
+2. Run this command from the root of the monorepo `nx <your_script> <your_package>` (e.g. `nx dev repositories`)
+
+### Run a single Typescript/Javascript file of a package without committing it
+
+1. Create a file in whenever you want inside your package named `__dev.ts` or `__dev.js` (e.g. the path could be in `/packages/repositories/src/__dev.ts`). It has two underscores.
+2. Add a script in the package's `package.json`. For example:
+
+```json
+"name": "@skiawallet/repositories",
+"scripts": {
+   "dev": "ts-node src/__dev.ts"
+}
+```
+
+3. Run this command from the root of the monorepo `nx <your_script> <your_package>` (e.g. `nx dev repositories`)
+
+> The files called `__dev.ts`, `__dev.tsx`, `__dev.js` or `__dev.jsx`  won't be committed to the git repository, because they're ignored by `.gitignore`.
+>
+> Alert: the files start with two underscores.
+
 ### Run the website
 
 1. (From the root directory) Run locally the wallet `nx run ui-wallet:serve` (you can see `ui-wallet` is the name of one of our packages; you can find the `serve` in the file `project.json` of that package). The console will run NextJS and will show you the localhost URL (e.g `http://localhost:4200`)

@@ -13,8 +13,13 @@
 ###########################
 ######### The rest
 
+# Files only for testing purposes
+**/__dev.ts*
+**/__dev.js*
+
 # Environment variables (API keys, API secrets...)
-*.env
+**.env
+.env*
 
 # Testing
 **/coverage
@@ -24,7 +29,6 @@
 
 # Miscellaneous
 .DS_Store
-.env*
 
 # Debug
 npm-debug.log*
