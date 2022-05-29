@@ -15,10 +15,10 @@
     "styled-components": "^5"
   },
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
+    "@headlessui/react": "^1.6.3",
     "@heroicons/react": "^1.0.6",
     "@nrwl/next": "14.1.7",
-    "@portis/web3": "^4.0.7",
+    "@tailwindcss/forms": "^0.5.2",
     "@types/styled-components": "^5.1.25",
     "core-js": "^3.6.5",
     "date-fns": "^2.11.1",
@@ -28,14 +28,14 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-is": "18.1.0",
+    "recoil": "*",
     "regenerator-runtime": "0.13.7",
     "remark": "^14.0.1",
     "remark-html": "^15.0.0",
     "styled-components": "^5.3.5",
     "ts-results": "^3.3.0",
     "tslib": "^2.3.0",
-    "uuid": "^8.3.2",
-    "web3": "^1.7.3"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nrwl/cli": "14.1.7",
