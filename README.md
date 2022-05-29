@@ -1,5 +1,5 @@
 # Skia Wallet
-[![Known Vulnerabilities](https://snyk.io/test/github/Future-Wallet/skia-wallet)/badge.svg)](https://snyk.io/test/github/Future-Wallet/skia-wallet)
+[![Known Vulnerabilities](https://snyk.io/test/github/Future-Wallet/skia-wallet/badge.svg)](https://snyk.io/test/github/Future-Wallet/skia-wallet)
 
 ## Architecture of the software
 
