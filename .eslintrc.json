@@ -4,8 +4,13 @@
     "**/*"
   ],
   "plugins": [
-    "@nrwl/nx"
+    "@nrwl/nx",
+    "no-unsanitized"
   ],
+  "rules": {
+    "no-unsanitized/method": "error",
+    "no-unsanitized/property": "error"
+  },
   "overrides": [
     {
       "files": [
