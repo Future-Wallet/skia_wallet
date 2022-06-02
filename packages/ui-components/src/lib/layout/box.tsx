@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { InferPropTypes } from './types';
+import { InferPropTypes } from '../types';
 
 const BoxPropTypes = {
   borderWidth: PropTypes.string,
@@ -25,8 +25,9 @@ const Box = styled.div<BoxProps>`
       : ''}
 
   background-color: inherit;
-  border-width: ${(props) => props.borderWidth};
   border: ${(props) => props.borderWidth} solid;
+  border-width: ${(props) => props.borderWidth};
+  border-radius: var(--border-radius)
   display: block;
   padding: ${(props) => props.padding};
 

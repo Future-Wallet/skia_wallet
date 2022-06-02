@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { InferPropTypes } from './types';
+import { InferPropTypes } from '../types';
 
 const CenterPropTypes = {
   andText: PropTypes.bool,

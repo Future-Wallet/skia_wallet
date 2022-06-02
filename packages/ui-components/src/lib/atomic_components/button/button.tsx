@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { InferPropTypes } from '../types';
+import { InferPropTypes } from '../../types';
 
 const ButtonPropTypes = {
   primary: PropTypes.bool,
@@ -24,6 +24,7 @@ const Button = styled.button<ButtonProps>`
   padding: 0.25em 1em;
   border: 2px solid palevioletred;
   border-radius: 3px;
+  hover: bg-blue-800;
 `;
 
 Button.propTypes = ButtonPropTypes;
