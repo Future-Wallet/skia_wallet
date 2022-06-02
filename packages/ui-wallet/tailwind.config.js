@@ -1,7 +1,8 @@
 const { join } = require('path');
 const { createGlobPatternsForDependencies } = require('@nrwl/react/tailwind');
 const defaultTheme = require('tailwindcss/defaultTheme');
-// const colors = require('tailwindcss/colors');
+
+// const { theme } = require('@skiawallet/ui-components');
 
 module.exports = {
   content: [
@@ -54,5 +55,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 };
