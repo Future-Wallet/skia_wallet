@@ -30,6 +30,7 @@ dist/
 
 # Miscellaneous
 .DS_Store
+.dccache
 
 # Debug
 npm-debug.log*
