@@ -2,5 +2,8 @@
   "name": "@skiawallet/repositories",
   "description": "The layer Repositories connects to external services (Auth, APIs, storage...)",
   "version": "0.0.1",
-  "type": "commonjs"
+  "type": "commonjs",
+  "scripts": {
+    "luis": "ts-node src/__dev.ts"
+  }
 }
