@@ -1,143 +1,308 @@
-// This code uses npx create-next-app --example with-tailwindcss to init repository
-// Steps to run this page:
-// open console and npx create-next-app --example with-tailwindcss name-of-app or just npx-create-next-app name-of-app
-// yarn or npm install bip39 ethers tailwindcss
-// Do: npm run dev on console to init on localhost:3000
-
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import * as bip39 from 'bip39'
-import { utils, Wallet, ethers } from 'ethers'
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-
-// THIS IS FOR USE OF BUFFER
-// const buffer = bip39.mnemonicToSeedSync(mnemonic)
-// console.log("buffer:",buffer)
-// // const buffer2 = bip39.mnemonicToSeed(mnemonic).then(console.log)
-// const buffer3 = bip39.mnemonicToSeedSync(mnemonic, '12345678')
-// console.log("buffer3:",buffer3)
-// const validate = bip39.validateMnemonic(mnemonic)
-// console.log("validate",validate)
-// THIS IS TO ENTER MNEMONIC IN ETHERS
-
-//THIS IS TO GET MORE ACCOUNTS
-// const secondAccount = hdNode.derivePath(`m/44'/60'/0'/0/1`); // This returns a new HDNode
-// console.log("secondAccount:",secondAccount)
-// const thirdAccount = hdNode.derivePath(`m/44'/60'/0'/0/2`);
-// console.log("thirdAccount:",thirdAccount)
-// const wallet = new Wallet(hdNode);
-// console.log("wallet:",wallet)
+import { utils, Wallet } from 'ethers'
+import { useEffect, useState } from 'react'
+import * as ethers from 'ethers'
+import AnkrscanProvider from '@ankr.com/ankr.js'
+import { fetchTokens } from '@airswap/metadata'
+import { Registry, Swap } from "@airswap/libraries";
+import { swapAbi } from '../hooks/airswapAbi'
+import { registryAbi } from '../hooks/airRegistryAbi'
+import { converterAbi } from '../hooks/airconverterAbi'
+import React from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import {
+  TemplateIcon,
+  IdentificationIcon,
+  BookmarkAltIcon,
+  ClipboardCheckIcon,
+  ClipboardListIcon,
+  LogoutIcon,
+  ChevronDownIcon,
+  SearchIcon,
+  SwitchHorizontalIcon,
+} from '@heroicons/react/outline'
+import {
+  ViewGridIcon,
+  MailIcon,
+  ShoppingCartIcon,
+  LightningBoltIcon,
+  ShoppingBagIcon,
+  HomeIcon,
+  BellIcon,
+  CurrencyDollarIcon,
+  PlusCircleIcon,
+} from '@heroicons/react/solid'
+import { abi } from '../hooks/abiERC20'
 
 const Home: NextPage = () => {
-  const [mnemonicOfUser, setMnemonicOfUser] = useState('')
-  const [walletOfUser, setWalletOfUser] = useState('')
-  const [seedOfUser, setSeedOfUser] = useState('')
-  const [privateKeyOfUser, setProvateKeyOfUser] = useState('')
-  const [privateKeyOfUser0x, setProvateKeyOfUser0x] = useState('')
+  // State of page components to render
   const [showThis, setShowThis] = useState(false)
-  const [formInput, updateFormInput] = useState({
-    account2: '',
-    amount: '',
+  // We set state to store the balance
+  const [balance, setBalance] = useState<any>()
+  const [nfts, setNfts] = useState<Array<{ tokenId: string; image: string }>>(
+    []
+  )
+  const [formInput, updateFormInput] = useState({ account2: '', amount: '' })
+  const [formInput2, updateFormInput2] = useState({
+    token: '',
+    token2: '',
+    amountSwap: '',
   })
-  const router = useRouter()
 
-  //THIS IS TO SET IT WHIT A NEW WALLET
-  // const signer = ethers.Wallet.createRandom();
-  // const signer = provider.getSigner()
-  // const signature = async () => {
-  //   const signature = await signer.signMessage('Some data')
-  //   return signature
-  // }
-  // const INFURA_ID = 'f4bd7d496b96423fb33b10cf61aa231e'
-  // const url =
-  const provider = new ethers.providers.JsonRpcProvider(
-    //`https://kovan.infura.io/v3/${INFURA_ID}`
-    'https://rpc.ankr.com/avalanche_fuji'
-  ) //
+  // We set state of the variables we are storing
+  const [mnemonicOfUser, setMnemonicOfUser] = useState<any>(null)
+  const [addressOfUser, setaddressOfUser] = useState<any>(null)
+  const [seedOfUser, setSeedOfUser] = useState<any>(null)
+  const [privateKeyOfUser, setPrivateKeyOfUser] = useState<any>(null)
+  const [privateKeyOfUser0x, setPrivateKeyOfUser0x] = useState<any>(null)
+  const [walletOfUser, setWalletOfUser] = useState<any>(null)
+  const [passwordInput, updatePasswordInput] = useState<any>(null)
 
-  const generateMyMnemonic = () => {
+  const generateMyMnemonic = async () => {
+    const provider = new ethers.providers.JsonRpcProvider(
+      //`https://kovan.infura.io/v3/${INFURA_ID}`
+      'https://matic-testnet-archive-rpc.bwarelabs.com'
+      // 'https://quickapi.com/'
+    )
+    // We generate a random mnemonic with BIP39
     const mnemonic = bip39.generateMnemonic()
     console.log('mnemonic:', mnemonic)
-    const seed = bip39.mnemonicToSeedSync(mnemonic).toString('hex')
-    console.log('Seed:', seed)
-    const hdNode = utils.HDNode.fromMnemonic(mnemonic)
+    const seedBuffer = bip39.mnemonicToSeedSync(mnemonic, passwordInput)
+    console.log('Seed:', seedBuffer)
+    const seed = bip39
+      .mnemonicToSeedSync(mnemonic, passwordInput)
+      .toString('hex')
+    // We sincronize the Mnemonic to be EVM compatible
+    const hdNode = utils.HDNode.fromSeed(Buffer.from(seed, 'hex'))
+    console.log(seed)
+    // const avaxndNode = new hdnode(seedBuffer)
     console.log('hdnNde:', hdNode)
+    // console.log('AvaxndNode:', avaxndNode)
+    // We retrieve the package data of the FIRST account -- DON'T USE DIRECTLY AS ADDRESS
+    const firstAccount = hdNode.derivePath(`m/44'/60'/0'/0/0`) // This returns a first account of wallet
+    console.log('firstAccount:', firstAccount)
+    // We retrieve the package data of the SECOND account -- DON'T USE DIRECTLY AS ADDRESS
+    const secondAccount = hdNode.derivePath(`m/44'/60'/0'/0/1`)
+    console.log('secondAccount:', secondAccount)
+    // More addresses can be fetched by this method
+    // const thirdAccount = hdNode.derivePath(`m/44'/60'/0'/0/2`)
+    // console.log('thirdAccount:', thirdAccount)
+    // Setting state to store the variables as string
     setMnemonicOfUser(mnemonic)
     setSeedOfUser(seed)
-    setProvateKeyOfUser0x(hdNode.privateKey)
-    setProvateKeyOfUser(hdNode.privateKey.substring(2))
-    setWalletOfUser(hdNode.address)
+    setPrivateKeyOfUser0x(firstAccount.privateKey)
+    setPrivateKeyOfUser(firstAccount.privateKey.substring(2))
+    setaddressOfUser(firstAccount.address)
+    setWalletOfUser(firstAccount)
+
+    const senderBalanceBefore = await provider.getBalance(firstAccount.address)
+    // We get the _hex value and we parse into a number
+    // We get the _hex value and we parse into a number
+    const yourNumber = parseInt(senderBalanceBefore._hex, 16) / 10 ** 18
+    // We set the balance in a state
+    setBalance(yourNumber)
+    // We connect to the Ankr API setting a provider, if set to none it will take all chains as input
   }
+
+  // We set a state to store the mnemonic that user imports
+  const [mnemonicInput, updateMnemonicInput] = useState('')
+
+  const inputMnemonic = async () => {
+    const provider = new ethers.providers.JsonRpcProvider(
+      //`https://kovan.infura.io/v3/${INFURA_ID}`
+      'https://matic-testnet-archive-rpc.bwarelabs.com'
+      // 'https://quickapi.com/'
+    )
+    // We decrypt the Mnemonic information to hex seed
+    const seedBuffer = bip39.mnemonicToSeedSync(mnemonicInput, passwordInput)
+    const seed = bip39
+      .mnemonicToSeedSync(mnemonicInput, passwordInput)
+      .toString('hex')
+    console.log('Seed:', seedBuffer)
+    // We sincronize the Mnemonic to be EVM compatible
+    const hdNode = utils.HDNode.fromSeed(Buffer.from(seed, 'hex'))
+    console.log('hdnNde:', hdNode)
+    // We retrieve the package data of the FIRST account -- DON'T USE DIRECTLY AS ADDRESS
+    const firstAccount = hdNode.derivePath(`m/44'/60'/0'/0/0`) // This returns a new HDNode
+    console.log('firstAccount:', firstAccount)
+    // We retrieve the package data of the SECOND account -- DON'T USE DIRECTLY AS ADDRESS
+    const secondAccount = hdNode.derivePath(`m/44'/60'/0'/0/1`) // This returns a new HDNode
+    console.log('secondAccount:', secondAccount)
+    // More addresses can be fetched by this method
+    // const thirdAccount = hdNode.derivePath(`m/44'/60'/0'/0/2`)
+    // console.log('thirdAccount:', thirdAccount)
+    // Setting state to store the variables as string
+    setMnemonicOfUser(mnemonicInput)
+    setSeedOfUser(seed)
+    setPrivateKeyOfUser0x(firstAccount.privateKey)
+    setPrivateKeyOfUser(firstAccount.privateKey.substring(2))
+    setaddressOfUser(firstAccount.address)
+
+    const senderBalanceBefore = await provider.getBalance(firstAccount.address)
+    // We get the _hex value and we parse into a number
+    const yourNumber = parseInt(senderBalanceBefore._hex, 16) / 10 ** 18
+    // We set the balance in a state
+    setBalance(yourNumber)
+  }
+
+  const fetchNfts = async () => {
+    // We connect to the Ankr API setting a provider, if set to none it will take all chains as input
+    const provider2 = new AnkrscanProvider('')
+    console.log('Prvodier NFTs:', provider2)
+
+    // We call the getNFTsByOwner method of the Ankr API
+    const data = await provider2.getNFTsByOwner({
+      blockchain: 'eth',
+      walletAddress: addressOfUser,
+      filter: [],
+    })
+    console.log('NFT Data', data)
+
+    // We map all the nfts listed on an Array,
+    // We use async await to let the function take time t fill the array
+    const items = await Promise.all(
+      // We go through the array item by item and search for specific information like ID and Image
+      data.assets.map(
+        async (i: { tokenId: any; imageUrl: { toString: () => any } }) => {
+          // We structure the information input and variables we are storring
+          let item = {
+            tokenId: i.tokenId,
+            image: i.imageUrl.toString(),
+          }
+          return item
+        }
+      )
+    )
+    // We set the NFT array to a React state
+    setNfts(items)
+  }
+
   const showItems = () => {
     setShowThis(true)
   }
-  const account1 = walletOfUser // Your account address 1
-  // Your account address 2
 
-  const send = async () => {
-    const account2 = walletOfUser // The account you want to send to
-    let wallet = new Wallet(privateKeyOfUser)
-    let walletSigner = wallet.connect(provider)
-    console.log('wallet:', wallet)
-    bip39.setDefaultWordlist('english')
-    console.log('word list', bip39.wordlists)
-    const senderBalanceBefore = await provider.getBalance(account1)
-    const recieverBalanceBefore = await provider.getBalance(account2)
-    let gasPrice = provider.getGasPrice()
-    console.log(
-      `\nSender balance before: ${ethers.utils.formatEther(
-        senderBalanceBefore
-      )}`
-    )
-    console.log(
-      `reciever balance before: ${ethers.utils.formatEther(
-        recieverBalanceBefore
-      )}\n`
-    )
-
-    const tx = {
-      from: account1,
-      to: account2,
-      value: ethers.utils.parseEther('1'),
-      nonce: provider.getTransactionCount(account1, 'latest'),
-      gasLimit: ethers.utils.hexlify(100000), // 100000
-      gasPrice: gasPrice,
-    }
-
-    console.log(tx)
-    setTimeout(function () {
-      //do what you need here
-    }, 200000)
-    walletSigner.sendTransaction(tx).then((transaction) => {
-      console.dir(transaction)
-      alert('Send finished!')
-    })
-
-    const senderBalanceAfter = await provider.getBalance(account1)
-    const recieverBalanceAfter = await provider.getBalance(account2)
-
-    console.log(
-      `\nSender balance after: ${ethers.utils.formatEther(senderBalanceAfter)}`
-    )
-    console.log(
-      `reciever balance after: ${ethers.utils.formatEther(
-        recieverBalanceAfter
-      )}\n`
-    )
+  const hideItems = () => {
+    setShowThis(false)
   }
-  async function sendCustonTransaction() {
-    const { account2 } = formInput
-    const sendValue = ethers.utils.parseUnits(formInput.amount, 'ether')
+
+  const [tokenList, setTokenList] = useState<any>([])
+  const tokensMetadata = async () => {
+    const { errors, tokens } = await fetchTokens(80001)
+    console.log(tokens)
+    setTokenList(tokens)
+  }
+
+  const swap = async () => {
+    const { token, token2, amountSwap } = formInput2
+    console.log(token)
+    console.log(token2)
+    console.log(amountSwap)
+    // // "https://quickapi.com/"
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
+    )
+    // We use the private key to get the full address instance
+    let firstAccountOfWallet = new ethers.Wallet(privateKeyOfUser)
+    // We get the signature information of the user
+    let signerOfWallet = firstAccountOfWallet.connect(provider)
+    const airswap = new ethers.Contract(
+      '0x03710fb8e65070A4Bc6422d111a1beb7949e1a87',
+      // '0x5F189f72Ed14E6A2d7d4A3fdd58E104a1c8C9024', AVAX FUJI
+      swapAbi,
+      signerOfWallet
+    )
+    const airRegistry = new ethers.Contract(
+      '0x054e6c06B044802BdF12136027C894ffd00d925A',
+      // '0x4F290e83B414097C107F5AD483a9ae15434B43d3', AVAX FUJI
+      registryAbi,
+      signerOfWallet
+    )
+    const airConverter = new ethers.Contract(
+      '0x04Ca0A9a349F5F24E7ca4e36a0a20D977518A033',
+      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
+      converterAbi,
+      signerOfWallet
+    )
+    const wToken1Contract = new ethers.Contract(
+      token,
+      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
+      abi,
+      signerOfWallet
+    )
+    const wToken2Contract = new ethers.Contract(
+      token2,
+      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
+      abi,
+      signerOfWallet
+    )
+    console.log('Swap Contract:', airswap)
+    console.log('Swap Registry:', airRegistry)
+    console.log('Swap Converter:', airConverter)
+    console.log('WETH:', wToken1Contract)
+    console.log('MATIC:', wToken2Contract)
+    const big = BigInt(parseFloat(amountSwap) * 10 ** 18)
+    // await wEthContract.approve(token, big).send({
+    //   from: addressOfUser,
+    // })
+    const baseTokenURLs = await airRegistry.getURLsForToken(token)
+    const quoteTokenURLs = await airRegistry.getURLsForToken(token2)
+    await tokensMetadata()
+    const serverURLs = baseTokenURLs.filter((amount: any) =>
+      quoteTokenURLs.includes(amount)
+    )
+    console.log(baseTokenURLs)
+    console.log(quoteTokenURLs)
+    console.log(serverURLs)
+
+    
+
+    const order = serverURLs[0].getSignerSideOrder(
+      amountSwap,
+      token,
+      token2,
+      addressOfUser
+    )
+    console.log(order)
+
+
+    await wToken1Contract.approve(airswap, big).send({ from: addressOfUser })
+    await wToken2Contract.approve(airswap, big).send({ from: addressOfUser })
+
+
+    console.log('Base Token URLS:', baseTokenURLs)
+    console.log('Quote Token URLS:', quoteTokenURLs)
+
+
+    const tx = await new airswap.light(order)
+
+    console.log('tx:', tx)
+  }
+
+  // Send COIN function -- ONLY USED FOR COINS not ERC20 Tokens
+  async function sendCustomTransaction() {
+    const provider = await new ethers.providers.JsonRpcProvider(
+      //`https://kovan.infura.io/v3/${INFURA_ID}`
+      // 'https://api.avax-test.network/ext/bc/C/rpc'
+      'https://matic-testnet-archive-rpc.bwarelabs.com'
+      // "https://quickapi.com/"
+    )
+    // We get the input values from user -- Must input 0x Address and Amount to send
+    const { account2, amount } = formInput
+    // Smart contracts uses 18 extra decimals so we have to transform the value into basic token value
+    const sendValue = ethers.utils.parseUnits(amount, 'ether')
     console.log(sendValue)
-    let wallet = new Wallet(privateKeyOfUser)
-    let walletSigner = wallet.connect(provider)
-    console.log('wallet:', wallet)
-    bip39.setDefaultWordlist('english')
-    console.log('word list', bip39.wordlists)
-    const senderBalanceBefore = await provider.getBalance(account1)
+
+    // We use the private key to get the full address instance
+    let firstAccountOfWallet = new Wallet(privateKeyOfUser)
+    // We get the signature information of the user
+    let signerOfWallet = firstAccountOfWallet.connect(provider)
+
+    // We get the balance of both addresses
+    const senderBalanceBefore = await provider.getBalance(addressOfUser)
     const recieverBalanceBefore = await provider.getBalance(account2)
-    let gasPrice = provider.getGasPrice()
     console.log(
       `\nSender balance before: ${ethers.utils.formatEther(
         senderBalanceBefore
@@ -149,36 +314,32 @@ const Home: NextPage = () => {
       )}\n`
     )
 
-    const tx = {
-      from: account1,
-      to: account2,
-      value: sendValue,
-      nonce: provider.getTransactionCount(account1, 'latest'),
-      gasLimit: ethers.utils.hexlify(100000), // 100000
-      gasPrice: gasPrice,
+    // We get the current value of gas
+    let gasPrice = provider.getGasPrice()
+
+    // We define the inputs for the transaction
+    const transaction = {
+      from: addressOfUser, // Sender
+      to: account2, // Reciever
+      value: sendValue, // Amount sending
+      nonce: provider.getTransactionCount(addressOfUser, 'latest'), // Nonce of address
+      gasLimit: ethers.utils.hexlify(100000), // 100000 standard
+      gasPrice: gasPrice, // GasPrice we got earlier
     }
+    console.log(transaction)
 
-    console.log(tx)
-    setTimeout(function () {
-      //do what you need here
-    }, 200000)
-    walletSigner.sendTransaction(tx).then((transaction) => {
-      console.dir(transaction)
-      alert('Send finished!')
-    })
-
-    const senderBalanceAfter = await provider.getBalance(account1)
-    const recieverBalanceAfter = await provider.getBalance(account2)
-
-    console.log(
-      `\nSender balance after: ${ethers.utils.formatEther(senderBalanceAfter)}`
-    )
-    console.log(
-      `reciever balance after: ${ethers.utils.formatEther(
-        recieverBalanceAfter
-      )}\n`
-    )
+    // We use the full instance of the signer address to send the transaction
+    signerOfWallet
+      // We exeute sendTransaction of the signer which already has an instance of ethers and can call functions
+      .sendTransaction(transaction)
+      // We fetch the event emited by the interface with the transaction information
+      .then((validatedTransaction: any) => {
+        // We alert the user that transaction was successfully validated
+        console.dir(validatedTransaction)
+        alert('Send finished!')
+      })
   }
+
   return (
     <div className="">
       <Head>
@@ -186,76 +347,322 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="grid justify-center text-center">
-        <h1 className="">WELCOME TO SKIA</h1>
-        <div>
-          {' '}
-          <button
-            onClick={generateMyMnemonic}
-            className="w-24 rounded-xl bg-blue-500 p-4 text-center font-bold text-white"
-          >
-            Generate
-          </button>
-        </div>
-
-        <p className="">{mnemonicOfUser}</p>
-        <p className="">{seedOfUser}</p>
-        <p className="">{walletOfUser}</p>
-        <p className="">{privateKeyOfUser}</p>
-        <p className="">{privateKeyOfUser0x}</p>
-        <div>
-          {' '}
-          <button
-            onClick={showItems}
-            className="w-24 rounded-xl bg-blue-500 p-4 text-center font-bold text-white"
-          >
-            Show
-          </button>
-        </div>
-
-        {showThis === false || (
-          <div>
-            <p className="">{mnemonicOfUser}</p>
-            <p className="">{seedOfUser}</p>
-            <p className="">{walletOfUser}</p>
-            <p className="">{privateKeyOfUser}</p>
-            <p className="">{privateKeyOfUser0x}</p>
+      <main className="">
+        <div className="sticky top-0 z-50 flex h-14 w-full items-center justify-between bg-[#1b212c] shadow-md">
+          <div className="absolute h-14 w-[13rem] p-2 pl-8" />
+          <div className="mr-8  h-14">
+            <Image
+              src="/SkiaWalletLogo.png"
+              layout="fixed"
+              height={55}
+              width={180}
+              className="cursor-pointer"
+            />
           </div>
-        )}
-        <div>
-          <button
-            onClick={send}
-            className="w-24 rounded-xl bg-blue-500 p-4 text-center font-bold text-white"
-          >
-            Send AVAX
-          </button>
-        </div>
-        <div>
-          {' '}
-          <input
-            placeholder="Send to this account"
-            className="mt-2 w-72 rounded border-2 p-4 "
-            onChange={(e) =>
-              updateFormInput({ ...formInput, account2: e.target.value })
-            }
-          />
-          <input
-            placeholder="Send this amount"
-            className="mt-2 w-72 rounded border-2 p-4 "
-            onChange={(e) =>
-              updateFormInput({ ...formInput, amount: e.target.value })
-            }
-          />
-        </div>
 
-        <div>
-          {' '}
-          <button
-            onClick={sendCustonTransaction}
-            className="mt-4 w-36 justify-center rounded-xl bg-blue-500 p-4 font-bold text-white shadow-lg"
-          >
-            Send Custon Transacton
-          </button>
+          <div className="flex grow items-center justify-end gap-2">
+            <Link href="/">
+              <div className="scaleButton flex h-8 w-32 cursor-pointer items-center justify-around rounded-full bg-blue-500 p-2">
+                <CurrencyDollarIcon className="scaleButton h-5 text-white" />
+                <p className="w-16 truncate text-xs font-semibold text-white">
+                  ${balance || 0}
+                </p>
+                <PlusCircleIcon className="scaleButton h-5 text-white" />
+              </div>
+            </Link>
+            <Link href="/">
+              <div className="siderMenuIconCircle scaleButton cursor-pointer">
+                <BellIcon className="iconSize" />
+              </div>
+            </Link>
+            <Link href="/">
+              <div className="mr-8 flex h-10 cursor-pointer items-center rounded-full bg-gray-300 shadow-lg ">
+                <Image
+                  src="/SkiaWalletSymbol.png"
+                  layout="fixed"
+                  height={42}
+                  width={42}
+                  className="rounded-full  "
+                />
+                <div className="ml-1 scale-90 sm:w-24 ">
+                  <p className="hidden w-24 truncate text-sm font-semibold sm:flex">
+                    {addressOfUser}
+                  </p>
+                  <p className="scaleText ml-0.5 hidden text-xs sm:flex">
+                    @username
+                  </p>
+                </div>
+                <ChevronDownIcon className="scaleText h-5 pr-4" />
+              </div>
+            </Link>
+          </div>
+        </div>
+        <div className="grid grid-cols-3">
+          <div className="">
+            <div className="siderOpacity sticky top-14 h-[45rem] shadow-md">
+              <div className="absolute h-full bg-white"></div>
+              <div className="relative z-20 ml-2">
+                <div className="">
+                  <h1 className="siderMenuTitle">Menu</h1>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle">
+                        <ViewGridIcon className="iconSize" />
+                      </div>
+                      {showThis === true || (
+                        <button
+                          onClick={showItems}
+                          className="siderMenuLinkText"
+                        >
+                          Show Dashboard
+                        </button>
+                      )}
+                      {showThis === false || (
+                        <button
+                          onClick={hideItems}
+                          className="siderMenuLinkText"
+                        >
+                          Hide Dashboard
+                        </button>
+                      )}
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <LightningBoltIcon className="iconSize" />
+                      </div>
+                      <button
+                        onClick={generateMyMnemonic}
+                        className="siderMenuLinkText"
+                      >
+                        Create Wallet
+                      </button>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <ShoppingBagIcon className="iconSize" />
+                      </div>
+                      <div>
+                        <button
+                          onClick={inputMnemonic}
+                          className="siderMenuLinkText"
+                        >
+                          Import Mnemonic
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <HomeIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">My Wallet</h2>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <ShoppingCartIcon className="iconSize" />
+                      </div>
+                      <button
+                        onClick={sendCustomTransaction}
+                        className="siderMenuLinkText"
+                      >
+                        Send Txn
+                      </button>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <SwitchHorizontalIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">Swap</h2>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <HomeIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">Staking</h2>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <BookmarkAltIcon className="iconSize" />
+                      </div>
+                      <div>
+                        <button
+                          className="siderMenuLinkText"
+                          onClick={fetchNfts}
+                        >
+                          NFTs
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <ClipboardListIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">History</h2>
+                    </div>
+                  </Link>
+
+                  <h1 className="siderMenuTitle">User Settings</h1>
+
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <IdentificationIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">Profile</h2>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <div className="siderMenuLinkWrapper">
+                      <div className="siderMenuIconCircle ">
+                        <TemplateIcon className="iconSize" />
+                      </div>
+                      <h2 className="siderMenuLinkText ">Settings</h2>
+                    </div>
+                  </Link>
+                  <Link href="/">
+                    <button className="m-3 flex h-12 w-32 items-center justify-center gap-2 rounded-full bg-blue-500">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                        <LogoutIcon className="h-6" />
+                      </div>
+                      <h2 className="mr-2 font-bold text-white ">Signout</h2>
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-span-2">
+            <h1 className="siderMenuTitle">WELCOME TO SKIA</h1>
+            <div>
+              <div className="flex h-10 items-center">
+                {showThis === false || (
+                  <div className="">
+                    <p className="p-4">{mnemonicOfUser || ''}</p>
+                  </div>
+                )}
+              </div>
+              <div className="flex">
+                <div className="flex h-12 items-center pt-5">
+                  {showThis === false || (
+                    <div className="">
+                      <p className="p-4">{addressOfUser}</p>
+                    </div>
+                  )}
+                </div>
+                <div></div>
+              </div>
+              <div className="flex h-20 items-center gap-4 p-4">
+                <input
+                  placeholder="Input your mnemonic"
+                  className="mt-2 h-10 w-56 rounded-2xl border-2 p-4 "
+                  onChange={(e) => updateMnemonicInput(e.target.value)}
+                />
+                <input
+                  placeholder="Input your password"
+                  className="mt-2 h-10 w-36 rounded-2xl border-2 p-4"
+                  onChange={(e) => updatePasswordInput(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex h-10 items-center">
+              {showThis === false || (
+                <div className="">
+                  <p className="p-4">{balance || 0} ETH</p>
+                  <p className="">{}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4 pl-4">
+              <input
+                placeholder="Send to this account"
+                className="mt-2 h-10 w-56 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput({ ...formInput, account2: e.target.value })
+                }
+              />{' '}
+              <input
+                placeholder="Send this amount"
+                type="number"
+                className="mt-2 h-10 w-36 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput({ ...formInput, amount: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex flex-wrap items-center pl-4">
+              <input
+                placeholder="Token 1 address to send"
+                className="mt-2 h-10 w-56 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput2({ ...formInput2, token: e.target.value })
+                }
+              />
+              <input
+                placeholder="Send this amount"
+                type="number"
+                className="mt-2 ml-4 h-10 w-36 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput2({
+                    ...formInput2,
+                    amountSwap: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="flex items-center pl-4">
+              <input
+                placeholder="Token 2 address to send"
+                className="mt-2 h-10 w-56 rounded-2xl border-2 p-4 "
+                onChange={(e) =>
+                  updateFormInput2({ ...formInput2, token2: e.target.value })
+                }
+              />
+              <div className="ml-12 mt-2 flex items-center gap-2 rounded-md bg-green-700 p-1 px-2 text-white">
+                <p>{}2</p>
+                <p>{}Tokens</p>
+              </div>
+            </div>
+            <button
+              onClick={swap}
+              className="m-4 rounded-3xl bg-blue-500 p-3 text-white"
+            >
+              TEST BUTTON
+            </button>
+            <div className="w-[40rem]">
+              <div className="flex flex-wrap justify-center gap-4">
+                {nfts.map((nft, i) => (
+                  <div
+                    key={i}
+                    className="w-36 overflow-hidden rounded-xl border shadow"
+                  >
+                    <img src={nft.image} className="h-36 w-36" />
+                    <div className="bg-indigo-400">
+                      <p className="ml-2 mr-2 flex justify-center">
+                        <a className="w-2/3 truncate">{nft.tokenId}</a>
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -265,3 +672,4 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
