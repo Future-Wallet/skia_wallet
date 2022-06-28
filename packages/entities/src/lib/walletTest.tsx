@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react'
 import * as ethers from 'ethers'
 import AnkrscanProvider from '@ankr.com/ankr.js'
 import { fetchTokens } from '@airswap/metadata'
-import { Registry, Swap } from "@airswap/libraries";
+import { Server, Swap, Registry } from '@airswap/libraries'
 import { swapAbi } from '../hooks/airswapAbi'
+import { axelarGatewayAbi } from '../hooks/AxelarGatewayAbi'
 import { registryAbi } from '../hooks/airRegistryAbi'
 import { converterAbi } from '../hooks/airconverterAbi'
 import React from 'react'
@@ -36,6 +37,8 @@ import {
   PlusCircleIcon,
 } from '@heroicons/react/solid'
 import { abi } from '../hooks/abiERC20'
+import { ThresholdError } from 'avalanche/dist/utils'
+
 
 const Home: NextPage = () => {
   // State of page components to render
@@ -48,8 +51,13 @@ const Home: NextPage = () => {
   const [formInput, updateFormInput] = useState({ account2: '', amount: '' })
   const [formInput2, updateFormInput2] = useState({
     token: '',
+    amountCross: '',
+    sendChain: ''
+  })
+  const [formInput3, updateFormInput3] = useState({
+    token: '',
     token2: '',
-    amountSwap: '',
+    swapAmount: ''
   })
 
   // We set state of the variables we are storing
@@ -64,20 +72,20 @@ const Home: NextPage = () => {
   const generateMyMnemonic = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
       //`https://kovan.infura.io/v3/${INFURA_ID}`
-      'https://matic-testnet-archive-rpc.bwarelabs.com'
+      'https://rpc.ankr.com/avalanche_fuji'
       // 'https://quickapi.com/'
     )
     // We generate a random mnemonic with BIP39
     const mnemonic = bip39.generateMnemonic()
     console.log('mnemonic:', mnemonic)
     const seedBuffer = bip39.mnemonicToSeedSync(mnemonic, passwordInput)
-    console.log('Seed:', seedBuffer)
+    console.log('Seed Buffer:', seedBuffer)
     const seed = bip39
       .mnemonicToSeedSync(mnemonic, passwordInput)
       .toString('hex')
     // We sincronize the Mnemonic to be EVM compatible
     const hdNode = utils.HDNode.fromSeed(Buffer.from(seed, 'hex'))
-    console.log(seed)
+    console.log('Seed hexed:', seed)
     // const avaxndNode = new hdnode(seedBuffer)
     console.log('hdnNde:', hdNode)
     // console.log('AvaxndNode:', avaxndNode)
@@ -113,7 +121,7 @@ const Home: NextPage = () => {
   const inputMnemonic = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
       //`https://kovan.infura.io/v3/${INFURA_ID}`
-      'https://matic-testnet-archive-rpc.bwarelabs.com'
+      'https://rpc.ankr.com/avalanche_fuji'
       // 'https://quickapi.com/'
     )
     // We decrypt the Mnemonic information to hex seed
@@ -148,6 +156,8 @@ const Home: NextPage = () => {
     setBalance(yourNumber)
   }
 
+
+  
   const fetchNfts = async () => {
     // We connect to the Ankr API setting a provider, if set to none it will take all chains as input
     const provider2 = new AnkrscanProvider('')
@@ -196,98 +206,109 @@ const Home: NextPage = () => {
   }
 
   const swap = async () => {
-    const { token, token2, amountSwap } = formInput2
+    const { token, token2, swapAmount } = formInput3
     console.log(token)
     console.log(token2)
-    console.log(amountSwap)
+    console.log(swapAmount)
+    // console.log(Server)
+    // console.log(Swap)
+    // console.log(Registry)
     // // "https://quickapi.com/"
     const provider = new ethers.providers.JsonRpcProvider(
       'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
     )
+    console.log('Provider:', provider)
     // We use the private key to get the full address instance
     let firstAccountOfWallet = new ethers.Wallet(privateKeyOfUser)
     // We get the signature information of the user
     let signerOfWallet = firstAccountOfWallet.connect(provider)
+    console.log('signerOfWallet:', signerOfWallet)
+    const swapContractAddress = '0x03710fb8e65070A4Bc6422d111a1beb7949e1a87' // '0x5F189f72Ed14E6A2d7d4A3fdd58E104a1c8C9024', FUJI
+    const registryContractAddress = '0x054e6c06B044802BdF12136027C894ffd00d925A' // '0x4F290e83B414097C107F5AD483a9ae15434B43d3', FUJI
+    const converterContractAddress =
+      '0x04Ca0A9a349F5F24E7ca4e36a0a20D977518A033' // '0x9F11691FA842856E44586380b27Ac331ab7De93d', FUJI
     const airswap = new ethers.Contract(
-      '0x03710fb8e65070A4Bc6422d111a1beb7949e1a87',
-      // '0x5F189f72Ed14E6A2d7d4A3fdd58E104a1c8C9024', AVAX FUJI
+      swapContractAddress,
       swapAbi,
       signerOfWallet
     )
     const airRegistry = new ethers.Contract(
-      '0x054e6c06B044802BdF12136027C894ffd00d925A',
-      // '0x4F290e83B414097C107F5AD483a9ae15434B43d3', AVAX FUJI
+      registryContractAddress,
+
       registryAbi,
       signerOfWallet
     )
     const airConverter = new ethers.Contract(
-      '0x04Ca0A9a349F5F24E7ca4e36a0a20D977518A033',
-      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
+      converterContractAddress,
+
       converterAbi,
       signerOfWallet
     )
-    const wToken1Contract = new ethers.Contract(
-      token,
-      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
-      abi,
-      signerOfWallet
-    )
-    const wToken2Contract = new ethers.Contract(
-      token2,
-      // '0x9F11691FA842856E44586380b27Ac331ab7De93d', AVAX FUJI
-      abi,
-      signerOfWallet
-    )
+    const wToken1Contract = new ethers.Contract(token, abi, signerOfWallet)
+    const wToken2Contract = new ethers.Contract(token2, abi, signerOfWallet)
     console.log('Swap Contract:', airswap)
     console.log('Swap Registry:', airRegistry)
     console.log('Swap Converter:', airConverter)
     console.log('WETH:', wToken1Contract)
     console.log('MATIC:', wToken2Contract)
-    const big = BigInt(parseFloat(amountSwap) * 10 ** 18)
-    // await wEthContract.approve(token, big).send({
-    //   from: addressOfUser,
-    // })
+    const big = BigInt(parseFloat(swapAmount) * 10 ** 18)
     const baseTokenURLs = await airRegistry.getURLsForToken(token)
     const quoteTokenURLs = await airRegistry.getURLsForToken(token2)
     await tokensMetadata()
     const serverURLs = baseTokenURLs.filter((amount: any) =>
       quoteTokenURLs.includes(amount)
     )
-    console.log(baseTokenURLs)
-    console.log(quoteTokenURLs)
-    console.log(serverURLs)
-
-    
-
-    const order = serverURLs[0].getSignerSideOrder(
-      amountSwap,
-      token,
-      token2,
-      addressOfUser
+    console.log('Base token Urls:', baseTokenURLs)
+    console.log('Quote token Urls:', quoteTokenURLs)
+    console.log('Server Urls:', serverURLs)
+    const nonce = await signerOfWallet.getTransactionCount()
+    console.log('Nonce:', nonce)
+    // const servers = await airRegistry.getServers(
+    //   sendAddress,
+    //   token
+    // )
+    const approval1 = await wToken1Contract.approve(swapContractAddress, big)
+    const approval2 = await wToken2Contract.approve(swapContractAddress, big)
+    // console.log("servers:",servers)
+    console.log('Approval1:', approval1)
+    console.log('Approval2:', approval2)
+    // const order = provider2.getSignerSideOrder(
+    //   amountCross,
+    //   sendAddress,
+    //   token,
+    //   signerOfWallet.address,
+    // )
+    // console.log("order:",order)
+    // const tx = await airswap.light(await order)
+    const blockNum = await provider.getBlockNumber()
+    const expiry = blockNum + 10
+    const tx = await new airswap.light(
+      nonce,
+      expiry,
+      signerOfWallet,
+      wToken1Contract,
+      swapAmount,
+      wToken2Contract,
+      swapAmount,
+      v,
+      r,
+      s
     )
-    console.log(order)
+      console.log('tx:', tx)
+    //   await wToken1Contract.approve(airswap, big).send({ from: addressOfUser })
+    //   await wToken2Contract.approve(airswap, big).send({ from: addressOfUser })
+
+    // const tx = await new airswap.light(order)
 
 
-    await wToken1Contract.approve(airswap, big).send({ from: addressOfUser })
-    await wToken2Contract.approve(airswap, big).send({ from: addressOfUser })
-
-
-    console.log('Base Token URLS:', baseTokenURLs)
-    console.log('Quote Token URLS:', quoteTokenURLs)
-
-
-    const tx = await new airswap.light(order)
-
-    console.log('tx:', tx)
   }
+
+
 
   // Send COIN function -- ONLY USED FOR COINS not ERC20 Tokens
   async function sendCustomTransaction() {
     const provider = await new ethers.providers.JsonRpcProvider(
-      //`https://kovan.infura.io/v3/${INFURA_ID}`
-      // 'https://api.avax-test.network/ext/bc/C/rpc'
-      'https://matic-testnet-archive-rpc.bwarelabs.com'
-      // "https://quickapi.com/"
+      'https://rpc.ankr.com/avalanche_fuji'
     )
     // We get the input values from user -- Must input 0x Address and Amount to send
     const { account2, amount } = formInput
@@ -339,6 +360,75 @@ const Home: NextPage = () => {
         alert('Send finished!')
       })
   }
+
+
+
+  async function crossChain() {
+    const { token, amountCross, sendChain } = formInput2
+    console.log(token)
+    console.log(amountCross)
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://rpc.ankr.com/avalanche_fuji'
+    )
+
+    console.log('Provider:', provider)
+
+    // We use the private key to get the full address instance
+    let firstAccountOfWallet = new ethers.Wallet(privateKeyOfUser)
+    // We get the signature information of the user
+    let signerOfWallet = firstAccountOfWallet.connect(provider)
+    console.log('signerOfWallet:', signerOfWallet)
+
+    const gatewayContractAddress = '0xC249632c2D40b9001FE907806902f63038B737Ab'
+    const axelarGateway = new ethers.Contract(
+      gatewayContractAddress,
+      axelarGatewayAbi,
+      signerOfWallet
+    )
+
+    const tokenAddress = "0xAF82969ECF299c1f1Bb5e1D12dDAcc9027431160"
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      abi,
+      signerOfWallet
+    )
+
+    console.log("Axelar Gateway:", axelarGateway)
+    const approval = await tokenContract.approve(gatewayContractAddress, amountCross)
+    console.log("approval:", approval)
+
+
+
+    // await axelarGateway.sendToken(
+    //   sendChain,
+    //   signerOfWallet.address,
+    //   tokenContract.symbol,
+    //   amountCross
+    // )
+
+    // console.log("gatewayAddress:", gatewayAddress)
+    // const environment: string = "testnet"; /*environment should be one of local | devnet | testnet | mainnet*/
+    // const api: AxelarAPI = new AxelarAPI(environment);
+
+    // const sdk = new AxelarAssetTransfer({
+    //   environment: "testnet",
+    //   auth: "local",
+    // });
+
+    // console.log("sdk:",sdk)
+    // const depositAddress = await sdk.getDepositAddress(
+    //   "avalanche", // source chain
+    //   "terra", // destination chain
+    //   "terra1qem4njhac8azalrav7shvp06myhqldpmkk3p0t", // destination address
+    //   "uusd" // asset to transfer
+    // );
+    // console.log("depositAddress:",depositAddress)
+
+  }
+
+
+
+
 
   return (
     <div className="">
@@ -621,29 +711,62 @@ const Home: NextPage = () => {
                 onChange={(e) =>
                   updateFormInput2({
                     ...formInput2,
-                    amountSwap: e.target.value,
+                    amountCross: e.target.value,
                   })
                 }
               />
             </div>
             <div className="flex items-center pl-4">
+
+              <input
+                placeholder="Select a Chain"
+                className="mt-2 h-10 w-56 rounded-2xl border-2 p-4 "
+                onChange={(e) =>
+                  updateFormInput2({ ...formInput2, sendChain: e.target.value })
+                }
+              />
+            </div>
+            <button
+              onClick={crossChain}
+              className="m-4 rounded-3xl bg-blue-500 p-3 text-white"
+            >
+              TEST CROSS
+            </button>
+            <div className="flex flex-wrap items-center pl-4">
+              <input
+                placeholder="Token 1 address to send"
+                className="mt-2 h-10 w-56 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput3({ ...formInput3, token: e.target.value })
+                }
+              />
+              <input
+                placeholder="Send this amount"
+                type="number"
+                className="mt-2 ml-4 h-10 w-36 rounded-2xl border-2 p-4"
+                onChange={(e) =>
+                  updateFormInput3({
+                    ...formInput3,
+                    swapAmount: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="flex items-center pl-4">
+
               <input
                 placeholder="Token 2 address to send"
                 className="mt-2 h-10 w-56 rounded-2xl border-2 p-4 "
                 onChange={(e) =>
-                  updateFormInput2({ ...formInput2, token2: e.target.value })
+                  updateFormInput3({ ...formInput3, token2: e.target.value })
                 }
               />
-              <div className="ml-12 mt-2 flex items-center gap-2 rounded-md bg-green-700 p-1 px-2 text-white">
-                <p>{}2</p>
-                <p>{}Tokens</p>
-              </div>
             </div>
             <button
               onClick={swap}
               className="m-4 rounded-3xl bg-blue-500 p-3 text-white"
             >
-              TEST BUTTON
+              TEST SWAP
             </button>
             <div className="w-[40rem]">
               <div className="flex flex-wrap justify-center gap-4">
