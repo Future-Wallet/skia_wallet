@@ -1,12 +1,22 @@
 {
-  "extends": "nx/presets/core.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "skiawallet",
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "packages"
+  },
   "affected": {
     "defaultBase": "main"
   },
   "cli": {
     "defaultCollection": "@nrwl/next"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
   },
   "tasksRunnerOptions": {
     "default": {
@@ -32,6 +42,9 @@
       "application": {
         "babel": true
       }
+    },
+    "@nrwl/js:library": {
+      "buildable": true
     }
   },
   "defaultProject": "ui-wallet"

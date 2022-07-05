@@ -4,6 +4,7 @@
   "projects": {
     "common": "packages/common",
     "entities": "packages/entities",
+    "prototype": "packages/prototype",
     "repositories": "packages/repositories",
     "ui-components": "packages/ui-components",
     "ui-wallet": "packages/ui-wallet"
