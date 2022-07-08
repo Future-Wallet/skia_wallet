@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { NextPage } from 'next';
+
 import Head from 'next/head';
 import * as bip39 from 'bip39';
 import { utils, Wallet } from 'ethers';
@@ -8,10 +8,7 @@ import * as ethers from 'ethers';
 import AnkrscanProvider from '@ankr.com/ankr.js';
 import { fetchTokens } from '@airswap/metadata';
 // import { Server, Swap, Registry } from '@airswap/libraries';
-import { swapAbi } from './airSwapAbi';
-// import { axelarGatewayAbi } from './AxelarGatewayAbi';
-import { registryAbi } from './airRegistryAbi';
-import { converterAbi } from './airConverterAbi';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,10 +31,15 @@ import {
   CurrencyDollarIcon,
   PlusCircleIcon,
 } from '@heroicons/react/solid';
-import { abi } from './abiERC20';
+
+import { swapAbi } from '../utils/airSwapAbi';
+import { registryAbi } from '../utils/airRegistryAbi';
+import { converterAbi } from '../utils/airConverterAbi';
+import { abi } from '../utils/abiERC20';
+// import { axelarGatewayAbi } from './AxelarGatewayAbi';
 // import { ThresholdError } from 'avalanche/dist/utils';
 
-const Home: NextPage = () => {
+export default function Home() {
   // State of page components to render
   const [showThis, setShowThis] = useState(false);
   // We set state to store the balance
@@ -423,18 +425,18 @@ const Home: NextPage = () => {
         <title>Skia Wallet</title>
       </Head>
 
-      <main className="">
+      <main>
         <div className="sticky top-0 z-50 flex h-14 w-full items-center justify-between bg-[#1b212c] shadow-md">
           <div className="absolute h-14 w-[13rem] p-2 pl-8" />
-          <div className="mr-8  h-14">
-            <Image
+          <div className="mr-8 h-14">
+            {/* <Image
               src="/SkiaWalletLogo.png"
               alt="Skia Wallet logo"
               layout="fixed"
               height={55}
               width={180}
               className="cursor-pointer"
-            />
+            /> */}
           </div>
 
           <div className="flex grow items-center justify-end gap-2">
@@ -454,14 +456,14 @@ const Home: NextPage = () => {
             </Link>
             <Link href="/" passHref>
               <div className="mr-8 flex h-10 cursor-pointer items-center rounded-full bg-gray-300 shadow-lg ">
-                <Image
+                {/* <Image
                   src="/SkiaWalletSymbol.png"
                   alt="Skia Wallet symbol"
                   layout="fixed"
                   height={42}
                   width={42}
                   className="rounded-full  "
-                />
+                /> */}
                 <div className="ml-1 scale-90 sm:w-24 ">
                   <p className="hidden w-24 truncate text-sm font-semibold sm:flex">
                     {addressOfUser}
@@ -778,6 +780,4 @@ const Home: NextPage = () => {
       <footer className=""></footer>
     </div>
   );
-};
-
-export default Home;
+}

@@ -10,16 +10,13 @@ export default function Login() {
   return (
     <div className="h-full">
       <Center andText={true}>
-        <Stack >
-          <h1>Create Your Wallet</h1>
-          <Grid>
-            <div>
-              <Button className="hover:bg-blue-800">Create your wallet</Button>
-            </div>
-            <div>
-              <Button className="hover:bg-blue-800">Create your wallet</Button>
-            </div>
-          </Grid>
+        <Stack>
+          <h1>You can create your wallet or import your current one</h1>
+          <div>
+            <Button className="hover:bg-blue-800">Create your wallet</Button>
+            <Button className="hover:bg-blue-800">Create your wallet</Button>
+          </div>
+          <div></div>
         </Stack>
       </Center>
       {showAutocreationSection ? (

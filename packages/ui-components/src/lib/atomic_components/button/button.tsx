@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import tw from 'twin.macro';
 import { InferPropTypes } from '../../types';
 
 const ButtonPropTypes = {
   primary: PropTypes.bool,
 };
+
 const ButtonDefaultTypes = {
   primary: false,
 };
@@ -25,7 +27,9 @@ const Button = styled.button<ButtonProps>`
   border: 2px solid palevioletred;
   border-radius: 3px;
   hover: bg-blue-800;
+  ${tw`border-solid`}
 `;
+// ${tw`hover:bg-black`};
 
 Button.propTypes = ButtonPropTypes;
 Button.defaultProps = ButtonDefaultTypes;

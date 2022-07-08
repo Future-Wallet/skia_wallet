@@ -1,4 +1,5 @@
 {
+  // Allow individual packages to have their own Babel configs.
   "babelrcRoots": [
     "*"
   ]

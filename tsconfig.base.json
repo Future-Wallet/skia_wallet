@@ -29,9 +29,6 @@
       ],
       "@skiawallet/ui-components": [
         "packages/ui-components/src/index.ts"
-      ],
-      "@skiawallet/ui-wallat": [
-        "packages/presentation/src/index.ts"
       ]
     },
     "strict": true,
