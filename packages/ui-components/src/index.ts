@@ -16,7 +16,6 @@ export const withTailwindUiComponents = resolve(
   __dirname,
   '../tailwind.config.js'
 );
-// export const withTailwindUiComponents = import('../tailwind.config.js');
 
 // Miscelleanous
 export * from './lib/types';
