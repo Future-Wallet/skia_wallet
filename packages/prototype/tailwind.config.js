@@ -1,11 +1,32 @@
-/** @type {import('tailwindcss').Config} */
+// /** @type {import('tailwindcss').Config} */
+// module.exports = {
+//   content: [
+//     './components/**/*.{js,ts,jsx,tsx}',
+//     './pages/**/*.{js,ts,jsx,tsx}',
+//   ],
+//   theme: {
+//     extend: {},
+//   },
+//   plugins: [],
+// };
+
+const { createGlobPatternsForDependencies } = require('@nrwl/react/tailwind');
+const { join } = require('path');
+
 module.exports = {
   content: [
-    './components/**/*.{js,ts,jsx,tsx}',
-    './pages/**/*.{js,ts,jsx,tsx}',
+    join(
+      __dirname,
+
+      '{src,pages,components}/**/*!(*.stories|*.spec).{ts,tsx,html}'
+    ),
+
+    ...createGlobPatternsForDependencies(__dirname),
   ],
+
   theme: {
     extend: {},
   },
+
   plugins: [],
 };

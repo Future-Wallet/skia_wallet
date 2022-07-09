@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+import type { NextPage } from 'next';
 import Head from 'next/head';
 import * as bip39 from 'bip39';
 import { utils, Wallet } from 'ethers';
@@ -7,8 +7,11 @@ import { useState } from 'react';
 import * as ethers from 'ethers';
 import AnkrscanProvider from '@ankr.com/ankr.js';
 import { fetchTokens } from '@airswap/metadata';
-// import { Server, Swap, Registry } from '@airswap/libraries';
-
+// import { Server, Swap, Registry } from '@airswap/libraries'
+import { swapAbi } from '../utils/airswapAbi';
+import { axelarGatewayAbi } from '../utils/AxelarGatewayAbi';
+import { registryAbi } from '../utils/airRegistryAbi';
+import { converterAbi } from '../utils/airConverterAbi';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,19 +34,21 @@ import {
   CurrencyDollarIcon,
   PlusCircleIcon,
 } from '@heroicons/react/solid';
-
-import { swapAbi } from '../utils/airSwapAbi';
-import { registryAbi } from '../utils/airRegistryAbi';
-import { converterAbi } from '../utils/airConverterAbi';
 import { abi } from '../utils/abiERC20';
-// import { axelarGatewayAbi } from './AxelarGatewayAbi';
 // import { ThresholdError } from 'avalanche/dist/utils';
 
-export default function Home() {
+const currentProvider =
+  'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
+//`https://kovan.infura.io/v3/${INFURA_ID}`
+// 'https://rpc.ankr.com/avalanche_fuji'
+// 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
+// 'https://quickapi.com/'
+
+const Home: NextPage = () => {
   // State of page components to render
   const [showThis, setShowThis] = useState(false);
   // We set state to store the balance
-  const [balance, setBalance] = useState<any>();
+  const [balance, setBalance] = useState<number>();
   const [nfts, setNfts] = useState<Array<{ tokenId: string; image: string }>>(
     []
   );
@@ -69,11 +74,7 @@ export default function Home() {
   const [passwordInput, updatePasswordInput] = useState<any>(null);
 
   const generateMyMnemonic = async () => {
-    const provider = new ethers.providers.JsonRpcProvider(
-      //`https://kovan.infura.io/v3/${INFURA_ID}`
-      'https://rpc.ankr.com/avalanche_fuji'
-      // 'https://quickapi.com/'
-    );
+    const provider = new ethers.providers.JsonRpcProvider(currentProvider);
     // We generate a random mnemonic with BIP39
     const mnemonic = bip39.generateMnemonic();
     console.log('mnemonic:', mnemonic);
@@ -119,8 +120,9 @@ export default function Home() {
 
   const inputMnemonic = async () => {
     const provider = new ethers.providers.JsonRpcProvider(
+      currentProvider
       //`https://kovan.infura.io/v3/${INFURA_ID}`
-      'https://rpc.ankr.com/avalanche_fuji'
+      // 'https://rpc.ankr.com/avalanche_fuji'
       // 'https://quickapi.com/'
     );
     // We decrypt the Mnemonic information to hex seed
@@ -158,7 +160,7 @@ export default function Home() {
   const fetchNfts = async () => {
     // We connect to the Ankr API setting a provider, if set to none it will take all chains as input
     const provider2 = new AnkrscanProvider('');
-    console.log('Prvodier NFTs:', provider2);
+    console.log('Providier NFTs:', provider2);
 
     // We call the getNFTsByOwner method of the Ankr API
     const data = await provider2.getNFTsByOwner({
@@ -195,11 +197,11 @@ export default function Home() {
     setShowThis(false);
   };
 
-  // const [tokenList, setTokenList] = useState<any>([]);
+  const [tokenList, setTokenList] = useState<any>([]);
   const tokensMetadata = async () => {
     const { errors, tokens } = await fetchTokens(80001);
     console.log(tokens);
-    // setTokenList(tokens);
+    setTokenList(tokens);
   };
 
   const swap = async () => {
@@ -312,7 +314,6 @@ export default function Home() {
 
     // We use the private key to get the full address instance
     const firstAccountOfWallet = new Wallet(privateKeyOfUser);
-
     // We get the signature information of the user
     const signerOfWallet = firstAccountOfWallet.connect(provider);
 
@@ -373,12 +374,11 @@ export default function Home() {
     console.log('signerOfWallet:', signerOfWallet);
 
     const gatewayContractAddress = '0xC249632c2D40b9001FE907806902f63038B737Ab';
-    // const axelarGateway = new ethers.Contract(
-    //   gatewayContractAddress,
-    //   axelarGatewayAbi,
-    //   signerOfWallet
-    // );
-    // console.log('Axelar Gateway:', axelarGateway);
+    const axelarGateway = new ethers.Contract(
+      gatewayContractAddress,
+      axelarGatewayAbi,
+      signerOfWallet
+    );
 
     const tokenAddress = '0xAF82969ECF299c1f1Bb5e1D12dDAcc9027431160';
     const tokenContract = new ethers.Contract(
@@ -387,6 +387,7 @@ export default function Home() {
       signerOfWallet
     );
 
+    console.log('Axelar Gateway:', axelarGateway);
     const approval = await tokenContract.approve(
       gatewayContractAddress,
       amountCross
@@ -422,21 +423,22 @@ export default function Home() {
   return (
     <div className="">
       <Head>
-        <title>Skia Wallet</title>
+        <title>Skia Wallet DEV</title>
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main className="">
         <div className="sticky top-0 z-50 flex h-14 w-full items-center justify-between bg-[#1b212c] shadow-md">
           <div className="absolute h-14 w-[13rem] p-2 pl-8" />
-          <div className="mr-8 h-14">
-            {/* <Image
+          <div className="mr-8  h-14">
+            <Image
+              alt=""
               src="/SkiaWalletLogo.png"
-              alt="Skia Wallet logo"
               layout="fixed"
               height={55}
               width={180}
               className="cursor-pointer"
-            /> */}
+            />
           </div>
 
           <div className="flex grow items-center justify-end gap-2">
@@ -456,14 +458,14 @@ export default function Home() {
             </Link>
             <Link href="/" passHref>
               <div className="mr-8 flex h-10 cursor-pointer items-center rounded-full bg-gray-300 shadow-lg ">
-                {/* <Image
+                <Image
+                  alt=""
                   src="/SkiaWalletSymbol.png"
-                  alt="Skia Wallet symbol"
                   layout="fixed"
                   height={42}
                   width={42}
                   className="rounded-full  "
-                /> */}
+                />
                 <div className="ml-1 scale-90 sm:w-24 ">
                   <p className="hidden w-24 truncate text-sm font-semibold sm:flex">
                     {addressOfUser}
@@ -763,7 +765,7 @@ export default function Home() {
                     key={i}
                     className="w-36 overflow-hidden rounded-xl border shadow"
                   >
-                    <Image alt="" src={nft.image} className="h-36 w-36" />
+                    <Image src={nft.image} alt="" className="h-36 w-36" />
                     <div className="bg-indigo-400">
                       <p className="ml-2 mr-2 flex justify-center">
                         <a className="w-2/3 truncate">{nft.tokenId}</a>
@@ -780,4 +782,6 @@ export default function Home() {
       <footer className=""></footer>
     </div>
   );
-}
+};
+
+export default Home;

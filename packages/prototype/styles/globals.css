@@ -1,17 +1,17 @@
-@tailwind base;
 @tailwind components;
+@tailwind base;
 @tailwind utilities;
 
 .scaleButton {
-  @apply hover:scale-110 ease-out transition-all duration-300
+  @apply hover:scale-110 ease-out transition-all duration-300;
 }
 
 .scaleText {
-  @apply hover:scale-105 ease-out transition-all duration-300
+  @apply hover:scale-105 ease-out transition-all duration-300;
 }
 
 .siderMenuIconCircle {
-  @apply bg-gray-300 rounded-full h-8 w-8 flex items-center justify-center m-2 border shadow-md ;
+  @apply bg-gray-300 rounded-full h-8 w-8 flex items-center justify-center m-2 border shadow-md;
 }
 
 .siderMenuLinkWrapper {
@@ -19,7 +19,7 @@
 }
 
 .siderMenuLinkText {
-  @apply font-semibold text-sm drop-shadow-md ;
+  @apply font-semibold text-sm drop-shadow-md;
 }
 
 .iconSize {
@@ -35,11 +35,11 @@
 }
 
 .indexBannerIconCircle {
-  @apply bg-white rounded-full h-16 w-16 flex items-center justify-center m-2 border shadow-lg ;
+  @apply bg-white rounded-full h-16 w-16 flex items-center justify-center m-2 border shadow-lg;
 }
 
 .indexBannerIconSize {
-  @apply h-12 w-12  text-blue-500 
+  @apply h-12 w-12  text-blue-500;
 }
 
 .indexBannerLinkWrapper {
@@ -47,7 +47,7 @@
 }
 
 .indexBannerLinkText {
-  @apply font-semibold text-xl drop-shadow-2xl text-white ml-1 ;
+  @apply font-semibold text-xl drop-shadow-2xl text-white ml-1;
 }
 
 .indexBannerLinkText2 {
@@ -59,7 +59,5 @@
 }
 
 .spaceComponentes {
-  @apply mt-4 mb-4
+  @apply mt-4 mb-4;
 }
-
-
