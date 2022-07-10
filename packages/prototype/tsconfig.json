@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    // Skip the type checking (`.d.ts`) of the ABI files
+    "skipLibCheck": true,
     "types": [
       "jest",
       "node"
