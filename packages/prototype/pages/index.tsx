@@ -66,10 +66,11 @@ const Home: NextPage = () => {
   // We set state of the variables we are storing
   const [mnemonicOfUser, setMnemonicOfUser] = useState<any>(null);
   const [addressOfUser, setaddressOfUser] = useState<any>(null);
-  const [setSeedOfUser] = useState<any>(null);
+
+  const [seedOfUser, setSeedOfUser] = useState<any>(null);
   const [privateKeyOfUser, setPrivateKeyOfUser] = useState<any>(null);
-  const [setPrivateKeyOfUser0x] = useState<any>(null);
-  const [setWalletOfUser] = useState<any>(null);
+  const [privateKeyOfUser0x, setPrivateKeyOfUser0x] = useState<any>(null);
+  const [walletOfUser, setWalletOfUser] = useState<any>(null);
   const [passwordInput, updatePasswordInput] = useState<any>(null);
 
   const generateMyMnemonic = async () => {
