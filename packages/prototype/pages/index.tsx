@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { NextPage } from 'next';
-import Head from 'next/head';
 import * as bip39 from 'bip39';
 import { utils, Wallet } from 'ethers';
 import { useState } from 'react';
 import * as ethers from 'ethers';
 import AnkrscanProvider from '@ankr.com/ankr.js';
 import { fetchTokens } from '@airswap/metadata';
-// import { Server, Swap, Registry } from '@airswap/libraries'
-import { swapAbi } from '../utils/airswapAbi';
-import { axelarGatewayAbi } from '../utils/AxelarGatewayAbi';
-import { registryAbi } from '../utils/airRegistryAbi';
-import { converterAbi } from '../utils/airConverterAbi';
-import React from 'react';
 import Image from 'next/image';
+import type { NextPage } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import {
   TemplateIcon,
@@ -34,8 +28,14 @@ import {
   CurrencyDollarIcon,
   PlusCircleIcon,
 } from '@heroicons/react/solid';
-import { abi } from '../utils/abiERC20';
+// import { Server, Swap, Registry } from '@airswap/libraries'
 // import { ThresholdError } from 'avalanche/dist/utils';
+
+import { swapAbi } from '../utils/airswapAbi';
+import { axelarGatewayAbi } from '../utils/AxelarGatewayAbi';
+import { registryAbi } from '../utils/airRegistryAbi';
+import { converterAbi } from '../utils/airConverterAbi';
+import { abi } from '../utils/abiERC20';
 
 const currentProvider =
   'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
@@ -67,10 +67,10 @@ const Home: NextPage = () => {
   // We set state of the variables we are storing
   const [mnemonicOfUser, setMnemonicOfUser] = useState<any>(null);
   const [addressOfUser, setaddressOfUser] = useState<any>(null);
-  const [seedOfUser, setSeedOfUser] = useState<any>(null);
+  const [setSeedOfUser] = useState<any>(null);
   const [privateKeyOfUser, setPrivateKeyOfUser] = useState<any>(null);
-  const [privateKeyOfUser0x, setPrivateKeyOfUser0x] = useState<any>(null);
-  const [walletOfUser, setWalletOfUser] = useState<any>(null);
+  const [setPrivateKeyOfUser0x] = useState<any>(null);
+  const [setWalletOfUser] = useState<any>(null);
   const [passwordInput, updatePasswordInput] = useState<any>(null);
 
   const generateMyMnemonic = async () => {
@@ -197,9 +197,12 @@ const Home: NextPage = () => {
     setShowThis(false);
   };
 
-  const [tokenList, setTokenList] = useState<any>([]);
+  const [setTokenList] = useState<any>([]);
   const tokensMetadata = async () => {
-    const { errors, tokens } = await fetchTokens(80001);
+    const {
+      //errors,
+      tokens,
+    } = await fetchTokens(80001);
     console.log(tokens);
     setTokenList(tokens);
   };
@@ -358,7 +361,11 @@ const Home: NextPage = () => {
   }
 
   async function crossChain() {
-    const { token, amountCross, sendChain } = formInput2;
+    const {
+      token,
+      amountCross,
+      //  sendChain
+    } = formInput2;
     console.log(token);
     console.log(amountCross);
     const provider = new ethers.providers.JsonRpcProvider(
