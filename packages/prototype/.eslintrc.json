@@ -6,7 +6,11 @@
     "next/core-web-vitals"
   ],
   "ignorePatterns": [
-    "!**/*"
+    "!**/*",
+    "jest.config.ts",
+    "utils/contracts/**",
+    "utils/mnemonicComponent.ts",
+    "utils/orderApi.tsx"
   ],
   "overrides": [
     {
@@ -28,7 +32,22 @@
         "*.ts",
         "*.tsx"
       ],
-      "rules": {}
+      // We set parserOptions.project for the project to allow TypeScript
+      // to create the type-checker behind the scenes when we run linting
+      "parserOptions": {
+        "project": [
+          "packages/prototype/tsconfig(.*)?.json"
+        ]
+        // "projectFolderIgnoreList": [
+        //   "**/utils/mnemonicComponent.ts"
+        // ]
+      },
+      "rules": {
+        "no-unused-vars": "warn",
+        "@typescript-eslint/no-unused-vars": [
+          "warn"
+        ]
+      }
     },
     {
       "files": [
