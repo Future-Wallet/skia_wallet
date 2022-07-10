@@ -31,7 +31,7 @@ import {
 // import { Server, Swap, Registry } from '@airswap/libraries'
 // import { ThresholdError } from 'avalanche/dist/utils';
 
-import { swapAbi } from '../utils/airswapAbi';
+import { swapAbi } from '../utils/airSwapAbi';
 import { axelarGatewayAbi } from '../utils/AxelarGatewayAbi';
 import { registryAbi } from '../utils/airRegistryAbi';
 import { converterAbi } from '../utils/airConverterAbi';
