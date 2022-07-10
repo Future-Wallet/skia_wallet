@@ -2,7 +2,8 @@
   "name": "skia_wallet",
   "private": true,
   "scripts": {
-    "web": "nx serve"
+    "web": "nx serve",
+    "web:build": "nx build"
   },
   "prettier": {
     "useTabs": false,
