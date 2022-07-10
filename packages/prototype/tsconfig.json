@@ -33,6 +33,10 @@
   ],
   "exclude": [
     "node_modules",
-    "jest.config.ts"
+    "jest.config.ts",
+    // Exclude unused files
+    "./utils/contracts/**",
+    "./utils/mnemonicComponent.ts",
+    "./utils/orderApi.tsx",
   ]
 }
