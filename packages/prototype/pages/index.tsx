@@ -37,12 +37,11 @@ import { registryAbi } from '../utils/airRegistryAbi';
 import { converterAbi } from '../utils/airConverterAbi';
 import { abi } from '../utils/abiERC20';
 
-const currentProvider =
-  'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
-//`https://kovan.infura.io/v3/${INFURA_ID}`
-// 'https://rpc.ankr.com/avalanche_fuji'
-// 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
-// 'https://quickapi.com/'
+const currentProvider = 'https://rpc.ankr.com/avalanche_fuji';
+// 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
+//`https://kovan.infura.io/v3/${INFURA_ID}`;
+// 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161';
+// 'https://quickapi.com/';
 
 const Home: NextPage = () => {
   // State of page components to render
