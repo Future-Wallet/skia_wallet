@@ -1,6 +1,0 @@
-address: "0xdac17f958d2ee523a2206206994597c13d831ec7"
-chainId: 1
-decimals: 6
-logoURI: "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
-name: "Tether USD"
-symbol: "USDT"
