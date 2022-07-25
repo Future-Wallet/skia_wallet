@@ -7,6 +7,7 @@
     "prototype": "packages/prototype",
     "repositories": "packages/repositories",
     "ui-components": "packages/ui-components",
-    "ui-wallet": "packages/ui-wallet"
+    "ui-wallet": "packages/ui-wallet",
+    "ui-wallet-next": "packages/ui-wallet-next"
   }
 }

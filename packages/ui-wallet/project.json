@@ -1,55 +1,70 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/ui-wallet",
+  "sourceRoot": "packages/ui-wallet/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/next:build",
+      "executor": "@nrwl/web:webpack",
       "outputs": [
         "{options.outputPath}"
       ],
       "defaultConfiguration": "production",
       "options": {
-        "root": "packages/ui-wallet",
-        "outputPath": "dist/packages/ui-wallet"
-      },
-      "configurations": {
-        "development": {},
-        "production": {}
-      }
-    },
-    "serve": {
-      "executor": "@nrwl/next:server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "ui-wallet:build",
-        "dev": true
+        "compiler": "babel",
+        "outputPath": "dist/packages/ui-wallet",
+        "index": "packages/ui-wallet/src/index.html",
+        "baseHref": "/",
+        "main": "packages/ui-wallet/src/main.tsx",
+        "polyfills": "packages/ui-wallet/src/polyfills.ts",
+        "tsConfig": "packages/ui-wallet/tsconfig.app.json",
+        "assets": [
+          "packages/ui-wallet/src/favicon.ico",
+          "packages/ui-wallet/src/assets"
+        ],
+        "styles": [
+          "packages/ui-wallet/src/styles.css"
+        ],
+        "scripts": [],
+        "webpackConfig": "packages/ui-wallet/webpack.config.js"
       },
       "configurations": {
         "development": {
-          "buildTarget": "ui-wallet:build:development",
-          "dev": true
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
         },
         "production": {
-          "buildTarget": "ui-wallet:build:production",
-          "dev": false
+          "fileReplacements": [
+            {
+              "replace": "packages/ui-wallet/src/environments/environment.ts",
+              "with": "packages/ui-wallet/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
         }
       }
     },
-    "export": {
-      "executor": "@nrwl/next:export",
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "ui-wallet:build:production"
-      }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/packages/ui-wallet"
-      ],
-      "options": {
-        "jestConfig": "packages/ui-wallet/jest.config.ts",
-        "passWithNoTests": true
+        "buildTarget": "ui-wallet:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ui-wallet:build:development"
+        },
+        "production": {
+          "buildTarget": "ui-wallet:build:production",
+          "hmr": false
+        }
       }
     },
     "lint": {
@@ -61,6 +76,16 @@
         "lintFilePatterns": [
           "packages/ui-wallet/**/*.{ts,tsx,js,jsx}"
         ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/ui-wallet"
+      ],
+      "options": {
+        "jestConfig": "packages/ui-wallet/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   },

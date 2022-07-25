@@ -27,7 +27,7 @@ const Button = styled.button<ButtonProps>`
   border: 2px solid palevioletred;
   border-radius: 3px;
   hover: bg-blue-800;
-  ${tw`border-solid`}
+  ${tw`border-dotted`}
 `;
 // ${tw`hover:bg-black`};
 

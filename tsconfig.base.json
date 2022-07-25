@@ -31,6 +31,7 @@
         "packages/ui-components/src/index.ts"
       ]
     },
+    "strictNullChecks": true,
     "strict": true,
     "alwaysStrict": true,
     "noImplicitAny": true,

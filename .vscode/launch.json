@@ -6,10 +6,24 @@
   "configurations": [
     {
       "name": "Chrome lh:4200",
-      "type": "pwa-chrome",
-      "request": "launch",
-      "url": "http://localhost:4200",
+      "type": "chrome",
+      "request": "attach",
+      // "urlFilter": "http://localhost:4200/*",
+      // "url": "http://localhost:4200",
+      "port": 9222,
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Chrome lh:4200",
+      "type": "chrome",
+      "request": "launch",
     }
   ]
 }

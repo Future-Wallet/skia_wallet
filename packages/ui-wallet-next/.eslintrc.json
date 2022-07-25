@@ -1,0 +1,60 @@
+{
+  "extends": [
+    "plugin:@nrwl/nx/react-typescript",
+    "../../.eslintrc.json",
+    "next",
+    "next/core-web-vitals"
+  ],
+  "ignorePatterns": [
+    "!**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
+      "rules": {
+        "@next/next/no-html-link-for-pages": [
+          "error",
+          "packages/wallet/pages"
+        ]
+      }
+    },
+    {
+      "parserOptions": {
+        "project": [
+          "packages/ui-wallet-next/tsconfig(.*)?.json"
+        ]
+      },
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
+      "rules": {
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": [
+          "warn"
+        ],
+        "no-unused-vars": "warn",
+        "@typescript-eslint/no-unused-vars": [
+          "warn"
+        ],
+        "no-explicit-any": "warn",
+        "@typescript-eslint/no-explicit-any": "warn"
+      }
+    },
+    {
+      "files": [
+        "*.js",
+        "*.jsx"
+      ],
+      "rules": {}
+    }
+  ],
+  "env": {
+    "jest": true
+  }
+}
