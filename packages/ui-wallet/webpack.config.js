@@ -1,4 +1,5 @@
 const { merge } = require('webpack-merge');
+const webpack = require('webpack');
 
 /**
  * Combine default Webpack configuration from Nx with a custom configuration.
@@ -7,9 +8,17 @@ const { merge } = require('webpack-merge');
  */
 module.exports = (config, context) => {
   return merge(config, {
-    // polyfills: require('./src/polyfills'),
-    // resolve: { fallback: { stream: false } },
-    resolve: { fallback: { stream: require.resolve('stream-browserify') } },
-    // This is the default Webpack config on file `project.json`: "webpackConfig": "@nrwl/react/plugins/webpack"
+    plugins: [
+      // Work around for when `Buffer` is `undefined`
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+    ],
+    resolve: {
+      fallback: {
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+      },
+    },
   });
 };
