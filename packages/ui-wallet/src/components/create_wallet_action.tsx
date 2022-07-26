@@ -1,7 +1,8 @@
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import { stateFormMnenomic, stateUserWallet } from '../state/wallet';
+import { routes } from '../utils/routes';
 import { UserWallet } from '../utils/wallet_entity';
 import Button from './atomic/button';
 import SectionTitle from './atomic/section_title';
@@ -16,12 +17,9 @@ export default function CreateWalletAction({
 }: {
   type: TypeOfWalletAction;
 }): JSX.Element | null {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [mnemonicInput, setMemonicInput] = useRecoilState(stateFormMnenomic);
   const setWalletOfUser = useRecoilState(stateUserWallet);
-
-  // const [isPendingForm, startTransitionForm] = useTransition();
-  // const [isPendingHandlingWallet, startTransitionHandlingWallet] = useTransition();
 
   const onChangeTextArea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMemonicInput({ value: event.target.value, error: '' });
@@ -37,8 +35,9 @@ export default function CreateWalletAction({
       setWalletOfUser[1](importedUserWallet);
 
       // Redirect to the home screen
-      router.push('/');
+      navigate(`/${routes.home}`, { replace: true });
     } catch (err) {
+      console.error(err);
       if (err instanceof Error) {
         setMemonicInput({
           ...mnemonicInput,
@@ -52,12 +51,12 @@ export default function CreateWalletAction({
     <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md">
       <SectionTitle>
         {type === TypeOfWalletAction.import
-          ? 'You already have a wallet'
-          : 'Create a new wallet'}
+          ? 'If you already have a wallet'
+          : 'If you want a new wallet'}
       </SectionTitle>
       <p className="mb-3 font-normal text-gray-700">
         {type === TypeOfWalletAction.import
-          ? 'You need to write your private key that consists of 24 words'
+          ? 'You need to write your private key'
           : 'It creates a new unique private key consisting of a phrase of 24 words'}
       </p>
       {type === TypeOfWalletAction.import ? (
@@ -79,7 +78,9 @@ export default function CreateWalletAction({
       null}
 
       <Button onClick={handleUserWallet} className="mt-6">
-        {type === TypeOfWalletAction.import ? 'Import' : 'Create'}
+        {type === TypeOfWalletAction.import
+          ? 'Import your wallet'
+          : 'Create a new wallet'}
       </Button>
     </div>
   );
