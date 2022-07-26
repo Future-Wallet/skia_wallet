@@ -18,7 +18,7 @@ export default function RequireInitialization({
     console.log(userWallet);
     return (
       <Navigate
-        to={`${routes.initialization}`}
+        to={`/${routes.initialization}`}
         state={{ from: location }}
         replace
       />
