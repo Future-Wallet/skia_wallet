@@ -33,9 +33,10 @@ export const stateUserWalletKey = 'state_user_wallet';
  *
  * @returns UserWallet or null
  */
-export const stateUserWallet = atom<UserWallet>({
+export const stateUserWallet = atom<UserWallet | null>({
   key: stateUserWalletKey,
-  effects: [localStorageRecoil<UserWallet>(stateUserWalletKey)],
+  default: null,
+  effects: [localStorageRecoil<UserWallet | null>(stateUserWalletKey)],
 });
 
 export const stateBalanceOfAccountKey = 'state_balance_of_account';

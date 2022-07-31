@@ -90,7 +90,7 @@ export default function SendMoney(): JSX.Element {
   };
 
   async function submit() {
-    const firstAccount = userWallet.props.accounts[0];
+    const firstAccount = userWallet!.props.accounts[0];
     setForm({ ...form, isSubmitting: true });
 
     // Stop the submitting if some data is missing.
@@ -108,7 +108,7 @@ export default function SendMoney(): JSX.Element {
     }
 
     try {
-      const response = await Api.getInstance(userWallet).sendMoney({
+      const response = await Api.getInstance(userWallet!).sendMoney({
         fromAccount: userWallet?.props.accounts[0] as AccountOfWallet,
         toPublicAddress: form.toPublicAddress.value as string,
         amountInEther: form.amount.value as string,
