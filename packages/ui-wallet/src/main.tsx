@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import App from './app';
-import DebugObserver from './state/utils';
+import { DebugObserver } from './state/utils';
 import './styles.css';
 
 const root = ReactDOM.createRoot(

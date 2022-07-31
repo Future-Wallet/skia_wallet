@@ -2,11 +2,13 @@
 @tailwind base;
 @tailwind utilities;
 
-body {
+body,
+#root {
   height: 100vh;
 }
 
 :root {
+  height: 100vh;
   --color-dark: #050505;
   --color-light: #fafafa;
   background-color: var(--color-light);

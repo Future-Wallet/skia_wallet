@@ -28,9 +28,7 @@ export default function CreateWalletAction({
   const handleUserWallet = () => {
     let importedUserWallet;
     try {
-      importedUserWallet = new UserWallet({
-        mnemonic: mnemonicInput.value,
-      });
+      importedUserWallet = new UserWallet(mnemonicInput.value);
 
       setWalletOfUser[1](importedUserWallet);
 

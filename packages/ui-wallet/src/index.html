@@ -10,7 +10,8 @@
   </head>
   <body>
     <script>
-      global = globalThis //<- this should be enough
+      // Load `global` to access to allow React to access window.
+      global = globalThis
     </script>
     <div id="root"></div>
   </body>

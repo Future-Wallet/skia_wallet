@@ -9,11 +9,7 @@ export default function Initialization(): JSX.Element {
         <div className="flex overflow-x-scroll pb-10">
           <div className="flex flex-nowrap ">
             <div className="inline-block px-2">
-              {/* {typeof window !== 'undefined' ? ( */}
               <CreateWalletAction type={TypeOfWalletAction.import} />
-              {/* ) : (
-                  <></>
-                )} */}
             </div>
           </div>
           <div className="flex flex-nowrap ">

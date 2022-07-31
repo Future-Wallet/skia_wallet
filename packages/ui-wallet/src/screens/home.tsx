@@ -1,20 +1,30 @@
+import { useRecoilStateLoadable } from 'recoil';
+import SendMoney from '../components/send_money';
 import WalletAccount from '../components/wallet_account';
+import { stateUserWallet } from '../state/wallet';
 
 export default function Home(): JSX.Element {
+  const [userWalletLoadable] = useRecoilStateLoadable(stateUserWallet);
+
   return (
-    <main>
-      <div className="mx-2">
-        <div className="flex overflow-x-scroll pb-10">
-          <div className="flex flex-nowrap ">
-            <div className="inline-block px-2"></div>
-          </div>
-          <div className="m-auto max-w-xl min-w-max">
-            <WalletAccount />
-          </div>
-          <div className="flex flex-nowrap ">
-            <div className="inline-block px-3"></div>
-          </div>
+    <main className="h-screen">
+      <div className="h-screen flex flex-col">
+        <div className="grow" />
+        <div className="grow-0 flex-col mx-auto">
+          {userWalletLoadable.state === 'hasValue' ? (
+            <div className="m-auto max-w-xl min-w-max">
+              <div>
+                <WalletAccount />
+              </div>
+              <div>
+                <SendMoney />
+              </div>
+            </div>
+          ) : (
+            'Loading...'
+          )}
         </div>
+        <div className="grow" />
       </div>
     </main>
   );

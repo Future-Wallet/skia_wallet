@@ -1,8 +1,8 @@
-import { DefaultValue } from 'recoil';
+import { AtomEffect, DefaultValue } from 'recoil';
 
 export const localStorageRecoil =
-  <T>(key: string) =>
-  ({ setSelf, onSet }: any) => {
+  <T>(key: string): AtomEffect<T> =>
+  ({ setSelf, onSet }) => {
     const storage = localStorage;
 
     // Get data of the according key.

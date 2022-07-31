@@ -10,10 +10,7 @@ export interface SectionTitleProps
 // const SectionTitle: React.FC<HTMLTitleElement> = ({ title, ...props }) => {
 const SectionTitle: React.FC<SectionTitleProps> = ({ children, ...props }) => {
   return (
-    <h5
-      {...props}
-      className="mb-2 text-2xl font-bold tracking-tight text-gray-900"
-    >
+    <h5 {...props} className="mb-5 text-2xl font-bold tracking-tight">
       {children}
     </h5>
   );

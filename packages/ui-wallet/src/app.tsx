@@ -5,8 +5,9 @@ import Home from './screens/home';
 import Initialization from './screens/initizalization';
 import { routes } from './utils/routes';
 
-export default function App() {
+export default function App(): JSX.Element {
   const location = useLocation();
+
   return (
     <Routes>
       <Route
