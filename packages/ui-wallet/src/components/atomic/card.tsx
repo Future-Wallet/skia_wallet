@@ -7,26 +7,33 @@ import SectionTitle from './section_title';
 
 interface CardProps extends HTMLProps<HTMLDivElement> {
   title: string;
-  children?: ReactNode;
+  children: ReactNode;
+  actions?: ReactNode[];
 }
 
-const Card: FC<CardProps> = ({ title, children, ...props }) => {
+const Card: FC<CardProps> = ({ title, actions, children, ...props }) => {
+  // <div name="card" className="m-2 w-full" {...props}>
   return (
-    <div className="mt-2 mx-2 mb-2" {...props}>
-      <div className="flex overflow-x-scroll">
-        <div className="flex flex-nowrap ">
-          <div className="inline-block px-2">
-            {/* <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md"> */}
-            <div className="p-6 max-w-sm bg-blue-50 rounded-2xl ">
-              <div>
-                <SectionTitle color="text-blue-800">{title}</SectionTitle>
-              </div>
-              <div>{children}</div>
-            </div>
-          </div>
+    <div
+      name="card"
+      className="m-2 w-full flex justify-center bg-blue-50 rounded-3xl"
+      {...props}
+    >
+      {/* <div className="flex overflow-x-scroll"> */}
+      {/* <div className="flex flex-nowrap "> */}
+      {/* <div className="flex justify-center bg-blue-50 rounded-2xl"> */}
+      {/* <div className="inline-block"> */}
+      <div className="max-w-sm p-6 rounded-3xl">
+        <div className="flex place-content-between">
+          <SectionTitle color="text-blue-800">{title}</SectionTitle>
+          <div>{actions}</div>
         </div>
+        <div>{children}</div>
       </div>
+      {/* </div> */}
     </div>
   );
+  /* </div> */
+  // </div>
 };
 export default Card;
