@@ -44,15 +44,15 @@ export default class Api {
     fromAccount,
     toPublicAddress,
     amountInEther,
-  }: // gasPriceInWei,
-  {
+    gasPriceInWei,
+  }: {
     fromAccount: AccountOfWallet;
     toPublicAddress: string;
     amountInEther: string;
     gasPriceInWei: string;
   }): Promise<ethers.providers.TransactionResponse> {
     // Validation of the public address
-    toPublicAddress = toPublicAddress.replace(' ', '');
+    toPublicAddress = toPublicAddress.replace(/\s{1,}/g, '');
     if (ethers.utils.isAddress(toPublicAddress) === false)
       throw Error(`The address ${toPublicAddress} is an invalid format`);
 
@@ -121,7 +121,7 @@ export default class Api {
       ),
       // 100000 is the standard
       // gasLimit: ethers.utils.hexlify(100000),
-      // gasPrice: gasPriceInWei,
+      gasPrice: gasPriceInWei,
     };
     console.log(transaction);
 
