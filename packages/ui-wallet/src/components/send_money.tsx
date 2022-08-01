@@ -57,7 +57,7 @@ export default function SendMoney(): JSX.Element {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     // Delete blank spaces.
-    const cleanedValue = event.target.value.replace(' ', '');
+    const cleanedValue = event.target.value.replace(/\s{1,}/g, '');
 
     setForm({
       ...form,
@@ -91,7 +91,6 @@ export default function SendMoney(): JSX.Element {
 
   async function submit() {
     const firstAccount = userWallet!.props.accounts[0];
-    setForm({ ...form, isSubmitting: true });
 
     // Stop the submitting if some data is missing.
     if (
@@ -108,6 +107,8 @@ export default function SendMoney(): JSX.Element {
     }
 
     try {
+      setForm({ ...form, isSubmitting: true });
+
       const response = await Api.getInstance(userWallet!).sendMoney({
         fromAccount: userWallet?.props.accounts[0] as AccountOfWallet,
         toPublicAddress: form.toPublicAddress.value as string,
@@ -115,7 +116,11 @@ export default function SendMoney(): JSX.Element {
         gasPriceInWei: gasPrice as string,
       });
 
-      setForm({ ...form, transactionStatus: { status: 'success', response } });
+      setForm({
+        ...form,
+        transactionStatus: { status: 'success', response },
+        isSubmitting: false,
+      });
 
       // Update account balance after sending the money.
       refresh();
@@ -224,14 +229,15 @@ export default function SendMoney(): JSX.Element {
           ) : null
         }
       </div>
-      <Button
-        onClick={submit}
-        disabled={gasPrice === null && userWallet !== null}
-        className="mt-4"
-      >
-        {gasPrice !== null ? 'Send now' : 'Loading data...'}
-      </Button>
-      <p>{String(form.transactionStatus?.response)}</p>
+      <div className="mt-5">
+        <Button
+          loading={form.isSubmitting}
+          onClick={submit}
+          disabled={gasPrice === null && userWallet !== null}
+        >
+          {gasPrice !== null ? 'Send now' : 'Loading data...'}
+        </Button>
+      </div>
       {/* <div>
         {form.errorOnSending === undefined ? (
           <>
