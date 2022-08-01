@@ -2,7 +2,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import RequireInitialization from './components/require_initialization';
 import Home from './screens/home';
-import Initialization from './screens/initizalization';
+import Initialization from './screens/initialization';
 import { routes } from './utils/routes';
 
 export default function App(): JSX.Element {
