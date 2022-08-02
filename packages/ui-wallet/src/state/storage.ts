@@ -1,12 +1,12 @@
 import { AtomEffect, DefaultValue } from 'recoil';
 
 export const localStorageRecoil =
-  <T>(key: string): AtomEffect<T> =>
+  <T>(stateKey: string): AtomEffect<T> =>
   ({ setSelf, onSet }) => {
     const storage = localStorage;
 
     // Get data of the according key.
-    const savedValue = storage.getItem(key);
+    const savedValue = storage.getItem(stateKey);
 
     if (savedValue != null) {
       // Initialize the initial value of the atom, or asynchronously
@@ -17,7 +17,7 @@ export const localStorageRecoil =
     // Subscribe to state changes and persist them to the storage.
     onSet((newValue: T, _: T | DefaultValue, isReset: boolean) => {
       isReset
-        ? storage.removeItem(key)
-        : storage.setItem(key, JSON.stringify(newValue));
+        ? storage.removeItem(stateKey)
+        : storage.setItem(stateKey, JSON.stringify(newValue));
     });
   };
