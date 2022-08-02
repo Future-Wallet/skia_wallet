@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ReactNode, FC, useEffect, useState, useRef } from 'react';
+import { ReactNode, FC, useEffect, useState } from 'react';
 import {
   // selector,
   useRecoilRefresher_UNSTABLE,
@@ -30,7 +30,6 @@ type WalletAccountProps = {
 };
 
 const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
-  const buttonRef = useRef(null);
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
   // const walletLoadable = useRecoilValueLoadable<UserWallet | null>(
@@ -184,7 +183,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
           onClick={() => copyPublicAddressToClipboard()}
           placeholder={wallet?.props.accounts[0].props.publicAddress}
         />
-        <Button ref={buttonRef} onClick={() => copyPublicAddressToClipboard()}>
+        <Button onClick={() => copyPublicAddressToClipboard()}>
           Copy address
         </Button>
         <div className="mt-5">
