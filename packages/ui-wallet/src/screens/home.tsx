@@ -6,13 +6,9 @@ export default function Home(): JSX.Element {
     <main className="h-screen">
       <div id={Home.name} className="mt-5 h-screen flex flex-col">
         <div className="grow-0 flex-col mx-auto">
-          <div className="m-auto max-w-xl">
-            <div>
-              <WalletAccount />
-            </div>
-            <div>
-              <SendMoney />
-            </div>
+          <div className="m-auto max-w-xl px-2">
+            <WalletAccount className="mb-4" />
+            <SendMoney />
           </div>
         </div>
       </div>

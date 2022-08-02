@@ -16,7 +16,7 @@ const Card: FC<CardProps> = ({ title, actions, children, ...props }) => {
   return (
     <div
       name="card"
-      className="m-2 w-full flex justify-center bg-blue-50 rounded-3xl"
+      className="w-full flex justify-center bg-blue-50 rounded-3xl"
       {...props}
     >
       {/* <div className="flex overflow-x-scroll"> */}

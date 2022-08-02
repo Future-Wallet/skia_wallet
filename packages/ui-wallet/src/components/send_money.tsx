@@ -229,7 +229,7 @@ export default function SendMoney(): JSX.Element {
           ) : null
         }
       </div>
-      <div className="mt-5">
+      <div className="mt-2">
         <Button
           loading={form.isSubmitting}
           onClick={submit}

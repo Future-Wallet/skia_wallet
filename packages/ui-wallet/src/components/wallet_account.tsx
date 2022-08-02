@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  ReactNode,
-  //  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { ReactNode, FC, useEffect, useState, useRef } from 'react';
 import {
   // selector,
   useRecoilRefresher_UNSTABLE,
@@ -14,25 +9,28 @@ import {
   useRecoilValue,
   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
-import { usePrevious } from '../state/utils';
+// import { usePreviousStateRecoil } from '../state/utils';
 
 import {
   // stateBalanceOfAccount,
   stateSelectorBalanceOfAccount,
   stateUserWallet,
 } from '../state/wallet';
+import { copyValueToClipboard } from '../utils/miscellaneous';
 // import Api from '../utils/api';
 import { UserWallet } from '../utils/wallet_entity';
+import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
 import Modal from './atomic/modal';
 import Settings from './settings';
 
-// const myQuery = selector({
-//   key: 'MyQuery',
-//   get: (stateBalanceOfAccount)=>,
-// });
-export default function WalletAccount(): JSX.Element {
+type WalletAccountProps = {
+  className?: string;
+};
+
+const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
+  const buttonRef = useRef(null);
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
   // const walletLoadable = useRecoilValueLoadable<UserWallet | null>(
@@ -44,7 +42,9 @@ export default function WalletAccount(): JSX.Element {
   //   stateBalanceOfAccount
   // );
   const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
-  const previousBalanceOfAccount = usePrevious(stateSelectorBalanceOfAccount);
+  // const previousBalanceOfAccount = usePreviousStateRecoil(
+  //   stateSelectorBalanceOfAccount
+  // );
   const balanceOfAccountLoadable =
     useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
       stateSelectorBalanceOfAccount
@@ -138,13 +138,16 @@ export default function WalletAccount(): JSX.Element {
   //   };
   // }, [wallet, setBalanceOfAccount]);
 
-  function copyAddressToClipboard() {
-    console.log();
+  async function copyPublicAddressToClipboard() {
+    if (wallet !== undefined && wallet?.props.accounts[0] !== undefined) {
+      await copyValueToClipboard(wallet.props.accounts[0].props.publicAddress);
+    }
   }
 
   function buttonSettings(): ReactNode {
     return (
       <IconButton
+        key="settings"
         className="rounded"
         data-modal-toggle="settings-modal"
         onClick={() => setShowSettings((value) => !value)}
@@ -168,27 +171,22 @@ export default function WalletAccount(): JSX.Element {
   }
 
   return (
-    <>
+    <div className={className}>
       <Card title="Your Wallet" actions={[buttonSettings()]}>
         <div>
           <p>Your public address that can be shared with others</p>
         </div>
-        <div className="flex flex-1">
-          <input
-            className="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5"
-            type="text"
-            readOnly
-            value={wallet?.props.accounts[0].props.publicAddress}
-            onClick={copyAddressToClipboard}
-            placeholder={wallet?.props.accounts[0].props.publicAddress}
-          />
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
-            // onClick="copyMeOnClipboard()"
-          >
-            Copy
-          </button>
-        </div>
+        <input
+          className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5"
+          type="text"
+          readOnly
+          value={wallet?.props.accounts[0].props.publicAddress}
+          onClick={() => copyPublicAddressToClipboard()}
+          placeholder={wallet?.props.accounts[0].props.publicAddress}
+        />
+        <Button ref={buttonRef} onClick={() => copyPublicAddressToClipboard()}>
+          Copy address
+        </Button>
         <div className="mt-5">
           {/* {balanceOfAccount} */}
           {/* {balanceOfAccountSelector} */}
@@ -197,9 +195,11 @@ export default function WalletAccount(): JSX.Element {
             const state = balanceOfAccountLoadable.state;
             if (state === 'hasError')
               return <i>error connecting to your data</i>;
-            else if (previousBalanceOfAccount === undefined) return '...';
-            else if (state === 'loading') return `${previousBalanceOfAccount}`;
-            else return `${balanceOfAccountLoadable.contents}`;
+            // else if (previousBalanceOfAccount === undefined) return '...';
+            else if (state === 'loading')
+              // return `${previousBalanceOfAccount} AVAX`;
+              return `...`;
+            else return `${balanceOfAccountLoadable.contents} AVAX`;
           })()}
           {/* {previousBalanceOfAccount === undefined ? (
           '...'
@@ -215,15 +215,15 @@ export default function WalletAccount(): JSX.Element {
         </div>
       </Card>
       {showSettings ? (
-        <Modal id="settings-modal---" onClose={() => setShowSettings(false)}>
-          {/* // eslint-disable-next-line @typescript-eslint/no-empty-function
-        // <Modal id="settings-modal" onClose={() => {}}> */}
+        <Modal title="Settings" onClose={() => setShowSettings(false)}>
           <Settings />
         </Modal>
       ) : null}
-    </>
+    </div>
   );
-}
+};
+
+export default WalletAccount;
 
 // function Balance(): JSX.Element {
 //   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
