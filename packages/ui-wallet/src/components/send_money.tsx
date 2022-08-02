@@ -99,6 +99,7 @@ export default function SendMoney(): JSX.Element {
       firstAccount === null ||
       gasPrice === null
     ) {
+      // Don't delete form data.
       setForm({
         ...form,
         transactionStatus: { status: 'error', response: undefined },
@@ -107,28 +108,31 @@ export default function SendMoney(): JSX.Element {
     }
 
     try {
-      setForm({ ...form, isSubmitting: true });
+      setForm({ ...form, isSubmitting: true, transactionStatus: undefined });
 
       const response = await Api.getInstance(userWallet!).sendMoney({
         fromAccount: userWallet?.props.accounts[0] as AccountOfWallet,
         toPublicAddress: form.toPublicAddress.value as string,
         amountInEther: form.amount.value as string,
-        gasPriceInWei: gasPrice as string,
+        gasPriceInWei: Utils.convertEtherToWei(gasPrice) as string,
       });
 
       setForm({
         ...form,
         transactionStatus: { status: 'success', response },
-        isSubmitting: false,
       });
 
       // Update account balance after sending the money.
-      refresh();
+      // Add some delay to get the most recent the balance.
+      setTimeout(refresh, 2000);
     } catch (err) {
       console.error(err);
+
+      // Don't delete form data.
       setForm({
         ...form,
         transactionStatus: { status: 'error', response: undefined },
+        isSubmitting: false,
       });
       return;
     }
@@ -144,7 +148,6 @@ export default function SendMoney(): JSX.Element {
         error: undefined,
       },
       transactionStatus: undefined,
-      // errorOnSending: undefined,
       isSubmitting: false,
     });
   }
@@ -195,7 +198,7 @@ export default function SendMoney(): JSX.Element {
           />
         </div>
         {
-          // Hide error on the input is empty
+          // Hide error of the input when it's empty
           form.toPublicAddress.value.length > 0 ? (
             <p className="mt-1 ml-3 text-sm text-red-600">
               {form.toPublicAddress.error}
@@ -223,8 +226,8 @@ export default function SendMoney(): JSX.Element {
         </div>
         <p className="mt-2 ml-3 text-sm">Included fee of {gasPrice} AVAX</p>
         {
-          // Hide error on the input is empty
-          form.toPublicAddress.value.length > 0 ? (
+          // Hide error of the input when it's empty
+          form.amount.value.length > 0 ? (
             <p className="ml-3 text-sm text-red-600">{form.amount.error}</p>
           ) : null
         }
@@ -237,6 +240,12 @@ export default function SendMoney(): JSX.Element {
         >
           {gasPrice !== null ? 'Send now' : 'Loading data...'}
         </Button>
+        {form.transactionStatus !== undefined &&
+        form.transactionStatus.status === 'error' ? (
+          <p className="ml-3 text-sm text-red-600">
+            It couldn't send the money, something went wrong
+          </p>
+        ) : null}
       </div>
       {/* <div>
         {form.errorOnSending === undefined ? (

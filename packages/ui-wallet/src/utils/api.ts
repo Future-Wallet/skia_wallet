@@ -120,8 +120,8 @@ export default class Api {
         'latest'
       ),
       // 100000 is the standard
-      // gasLimit: ethers.utils.hexlify(100000),
-      gasPrice: gasPriceInWei,
+      gasLimit: ethers.utils.hexlify(100000),
+      gasPrice: ethers.BigNumber.from(gasPriceInWei),
     };
     console.log(transaction);
 
