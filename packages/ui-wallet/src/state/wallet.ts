@@ -51,7 +51,7 @@ export const stateBalanceOfAccount = atom<string | null>({
  * @returns atom
  */
 export const stateSelectorBalanceOfAccount = selector<string | null>({
-  key: stateBalanceOfAccountKey + '-selector',
+  key: stateBalanceOfAccountKey + '_selector',
   get: async ({ get }): Promise<string> => {
     const wallet = get(stateUserWallet);
 
