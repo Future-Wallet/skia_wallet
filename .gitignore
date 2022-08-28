@@ -14,8 +14,14 @@
 ######### The rest
 
 # Files only for testing purposes
+**/_dev.ts*
 **/__dev.ts*
+**/_dev.js*
 **/__dev.js*
+
+# Personal to-do list
+TODO.md
+todo.md
 
 # Environment variables (API keys, API secrets...)
 **.env
