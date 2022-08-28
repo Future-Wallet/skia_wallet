@@ -27,7 +27,7 @@ The goal of Skia Wallet:
 
 ## How does Skia Wallet work?
 
-1. [Contribute](https://github.com/Future-Wallet/skia-wallet/blob/main/CONTRIBUTING.md)
+1. [Contribute](https://github.com/Future-Wallet/skia-wallet/blob/main/CONTRIBUTING.md) to the code or documentation
 2. Understand the [structure of the code](https://github.com/Future-Wallet/skia-wallet/wiki/Code-structure)
-3. Run Skia Wallet on your computer
+3. [Run Skia Wallet on your computer](https://github.com/Future-Wallet/skia-wallet/wiki/Run-code)
 4. [Security](https://github.com/Future-Wallet/skia-wallet/wiki/Security)
