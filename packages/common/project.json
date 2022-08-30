@@ -35,7 +35,7 @@
       ],
       "options": {
         "jestConfig": "packages/common/jest.config.ts",
-        "passWithNoTests": true
+        "codeCoverage": true
       }
     }
   },

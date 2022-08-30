@@ -2,6 +2,7 @@
 export default {
   displayName: 'entities',
   preset: '../../jest.preset.js',
+  testEnvironment: 'node',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -10,6 +11,6 @@ export default {
   transform: {
     '^.+\\.[tj]s$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
+  moduleFileExtensions: ['ts'],
   coverageDirectory: '../../coverage/packages/entities',
 };
