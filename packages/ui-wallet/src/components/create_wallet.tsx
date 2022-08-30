@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
+import { Utils } from '@skiawallet/repositories';
 
 import { stateUserWallet } from '../state/wallet';
 import { routes } from '../utils/routes';
-import { Utils } from '../utils/wallet_entity';
 import Button from './atomic/button';
 
 export default function CreateWallet(): JSX.Element | null {

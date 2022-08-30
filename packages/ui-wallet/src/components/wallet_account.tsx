@@ -18,7 +18,7 @@ import {
 } from '../state/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
 // import Api from '../utils/api';
-import { UserWallet } from '../utils/wallet_entity';
+import { UserWallet } from '@skiawallet/entities';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';

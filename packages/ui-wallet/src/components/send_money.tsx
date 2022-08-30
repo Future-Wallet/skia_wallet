@@ -1,13 +1,13 @@
 import { ethers, utils } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
 import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
+import { AccountOfWallet } from '@skiawallet/entities';
+import { Api, Utils } from '@skiawallet/repositories';
 
 import {
   stateSelectorBalanceOfAccount,
   stateUserWallet,
 } from '../state/wallet';
-import Api from '../utils/api';
-import { AccountOfWallet, Utils } from '../utils/wallet_entity';
 import Button from './atomic/button';
 import Card from './atomic/card';
 

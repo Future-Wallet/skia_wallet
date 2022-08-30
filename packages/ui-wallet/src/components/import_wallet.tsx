@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil';
 
 import { stateFormMnenomic, stateUserWallet } from '../state/wallet';
 import { routes } from '../utils/routes';
-import { UserWallet } from '../utils/wallet_entity';
+import { UserWallet } from '@skiawallet/entities';
 import Button from './atomic/button';
 
 export default function ImportWallet(): JSX.Element {

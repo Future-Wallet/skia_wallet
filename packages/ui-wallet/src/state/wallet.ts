@@ -1,8 +1,8 @@
 import { atom, selector } from 'recoil';
+import { UserWallet } from '@skiawallet/entities';
 
-import Api from '../utils/api';
-import { UserWallet } from '../utils/wallet_entity';
 import { localStorageRecoil } from './storage';
+import { Api } from '@skiawallet/repositories';
 
 type FormMnemonicInput = {
   value: string;
