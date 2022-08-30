@@ -1,5 +1,5 @@
-import { Err, Ok, Result } from 'ts-results';
-import { Entity, Guard, UniqueEntityId } from '@skiawallet/common';
+import { Ok, Result } from 'ts-results';
+import { Entity, UniqueEntityId } from '@skiawallet/common';
 
 import { Token } from './tokens';
 
@@ -39,11 +39,11 @@ export class TransactionSend extends Entity<TransactionSendProps> {
     props: TransactionSendProps,
     id?: UniqueEntityId
   ): Result<TransactionSend, string> {
-    const notNegativeGuard = Guard.greaterThan(0, props.amount);
+    // const notNegativeGuard = Guard.greaterThan(0, props.amount);
 
-    if (!notNegativeGuard.succeeded) {
-      Err(notNegativeGuard.succeeded!);
-    }
+    // if (!notNegativeGuard.succeeded) {
+    //   Err(notNegativeGuard.succeeded!);
+    // }
 
     return Ok(new TransactionSend(props, id));
   }

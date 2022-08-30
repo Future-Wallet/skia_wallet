@@ -1,14 +1,14 @@
-import { Err, Ok, Result } from 'ts-results';
-import { Entity, Guard, UniqueEntityId } from '@skiawallet/common';
+import { Ok, Result } from 'ts-results';
+import { Entity, UniqueEntityId } from '@skiawallet/common';
 
-import { AccountAddress } from './account_address';
+import { Address } from './address';
 import { Token } from './tokens';
 
 interface SwapProps {
   fromToken: Token;
   toToken: Token;
   amount: number;
-  fromAddress: AccountAddress;
+  fromAddress: Address;
 }
 
 class Swap extends Entity<SwapProps> {
@@ -25,7 +25,7 @@ class Swap extends Entity<SwapProps> {
   get amount(): number {
     return this.props.amount;
   }
-  get fromAddress(): AccountAddress {
+  get fromAddress(): Address {
     return this.props.fromAddress;
   }
 
@@ -37,23 +37,6 @@ class Swap extends Entity<SwapProps> {
     props: SwapProps,
     id?: UniqueEntityId
   ): Result<Swap, string> {
-    const nullGuard = Guard.againstNullOrUndefinedBulk([
-      {
-        argument: props.fromToken,
-        argumentName: 'fromToken',
-      },
-      {
-        argument: props.toToken,
-        argumentName: 'toToken',
-      },
-      { argument: props.amount, argumentName: 'amount' },
-      { argument: props.fromAddress, argumentName: 'fromAddress' },
-    ]);
-
-    if (!nullGuard.succeeded) {
-      return Err(nullGuard.message!);
-    }
-
     return Ok(new Swap(props, id));
   }
 }

@@ -1,5 +1,5 @@
-import { Err, Ok, Result } from 'ts-results';
-import { Entity, Guard, UniqueEntityId } from '@skiawallet/common';
+import { Ok, Result } from 'ts-results';
+import { Entity, UniqueEntityId } from '@skiawallet/common';
 
 export interface TransactionReceiveProps {
   address: string;
@@ -23,11 +23,11 @@ export class TransactionReceive extends Entity<TransactionReceiveProps> {
     props: TransactionReceiveProps,
     id?: UniqueEntityId
   ): Result<TransactionReceive, string> {
-    const notNegativeGuard = Guard.greaterThan(0, props.amount);
+    // const notNegativeGuard = Guard.greaterThan(0, props.amount);
 
-    if (!notNegativeGuard.succeeded) {
-      Err(notNegativeGuard.succeeded!);
-    }
+    // if (!notNegativeGuard.succeeded) {
+    //   Err(notNegativeGuard.succeeded!);
+    // }
 
     return Ok(new TransactionReceive(props, id));
   }
