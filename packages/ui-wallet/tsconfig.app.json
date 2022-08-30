@@ -1,9 +1,11 @@
 {
   "extends": "./tsconfig.json",
-  "outDir": "../../dist/out-tsc",
-  "types": [
-    "node"
-  ],
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": [
+      "node"
+    ],
+  },
   "paths": {
     "stream": [
       "./node_modules/readable-stream"
@@ -21,14 +23,8 @@
     "**/*.test.ts",
     "**/*.spec.tsx",
     "**/*.test.tsx",
-    "**/*.spec.js",
-    "**/*.test.js",
-    "**/*.spec.jsx",
-    "**/*.test.jsx"
   ],
   "include": [
-    "**/*.js",
-    "**/*.jsx",
     "**/*.ts",
     "**/*.tsx"
   ]
