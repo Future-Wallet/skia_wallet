@@ -8,6 +8,7 @@ type Logger = {
   debug(logMessage: LogMessage): void;
   debug(message: string): void;
   info(logMessage: LogMessage): void;
+  info(message: string): void;
 };
 
 /**
@@ -25,6 +26,7 @@ export const logger: Logger = {
       const logger = createLogger({
         level: 'debug',
         format: format.combine(
+          format.timestamp(),
           format.printf(({ level, message, timestamp }) => {
             return `${level} ${timestamp}: ${message}`;
           })
@@ -36,13 +38,11 @@ export const logger: Logger = {
     }
   },
   info(data): void {
-    if (
-      process.env['NODE_ENV'] !== 'production' &&
-      process.env['NX_ENABLE_LOGGER'] == 'true'
-    ) {
+    if (process.env['NODE_ENV'] !== 'production') {
       const logger = createLogger({
         level: 'info',
         format: format.combine(
+          format.timestamp(),
           format.printf(({ level, message, timestamp }) => {
             return `${level} ${timestamp}: ${message}`;
           })
