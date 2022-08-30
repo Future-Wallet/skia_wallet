@@ -3,7 +3,10 @@
   "private": true,
   "scripts": {
     "web": "nx serve",
-    "web:build": "nx build"
+    "web:build": "nx build",
+    "test:common--watch": "nx serve common:test --watch",
+    "test:entities--watch": "nx serve entities:test --watch",
+    "test:repositories--watch": "nx serve repositories:test --watch"
   },
   "prettier": {
     "useTabs": false,

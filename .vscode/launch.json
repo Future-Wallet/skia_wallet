@@ -1,9 +1,54 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+    {
+      "name": "Test common",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "test:common--watch"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "presentation": {
+        "group": "backend",
+      }
+    },
+    {
+      "name": "Test entities",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "test:entities--watch"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "presentation": {
+        "group": "backend",
+      }
+    },
+    {
+      "name": "Test repositories",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "test:repositories--watch"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "presentation": {
+        "group": "backend",
+      }
+    },
     {
       "name": "Chrome lh:4200",
       "type": "chrome",
@@ -11,19 +56,28 @@
       "urlFilter": "http://localhost:4200/*",
       // "url": "http://localhost:4200",
       "port": 9222,
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "presentation": {
+        "group": "frontend",
+      }
     },
     {
       "name": "Attach to Chrome",
       "port": 9222,
       "request": "attach",
       "type": "chrome",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "presentation": {
+        "group": "frontend",
+      }
     },
     {
       "name": "Chrome lh:4200",
       "type": "chrome",
       "request": "launch",
+      "presentation": {
+        "group": "frontend",
+      }
     }
   ]
 }
