@@ -11,11 +11,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    // "paths": {
-    //   "stream": [
-    //     "../../node_modules/readable-stream"
-    //   ]
-    // }
   },
   "files": [],
   "include": [],
