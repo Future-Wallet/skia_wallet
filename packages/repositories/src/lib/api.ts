@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
+import { AccountOfWallet, UserWallet } from '@skiawallet/entities';
 
-import { AccountOfWallet, UserWallet, Utils } from './wallet_entity';
+import { Utils } from './utils';
 
 // Avalanche C-chain testnet Fuji https://docs.avax.network/apis/avalanchego/public-api-server#using-the-public-api-nodes
 // 'https://rpc.ankr.com/avalanche_fuji'
@@ -11,9 +12,8 @@ export const jsonRpcProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 /**
  * It's a singleton (it disables the creation multiple Api instances).
  */
-export default class Api {
+export class Api {
   private static _instance?: Api;
-  // @ts-expect-error
   private readonly _userWallet: UserWallet;
 
   private constructor(userWallet: UserWallet) {
