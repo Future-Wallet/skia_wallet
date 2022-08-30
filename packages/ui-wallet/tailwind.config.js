@@ -1,8 +1,8 @@
 const { join } = require('path');
 const { createGlobPatternsForDependencies } = require('@nrwl/react/tailwind');
 
-// TODO: Nx doesn't recognize monorepo's packages. Probably
-// it needs a reconfiguration in some part.
+// TODO: Nx doesn't recognize on packages on this path directory. It needs a
+// reconfiguration in some part.
 // const { withTailwindUiComponents } = require('@skiawallet/ui-components');
 
 /** @type {import('tailwindcss').Config} */
