@@ -11,7 +11,7 @@ interface SwapProps {
   fromAddress: Address;
 }
 
-class Swap extends Entity<SwapProps> {
+export class Swap extends Entity<SwapProps> {
   get id(): UniqueEntityId {
     return this._id;
   }
