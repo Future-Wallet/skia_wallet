@@ -110,7 +110,7 @@ export default function SendMoney(): JSX.Element {
     try {
       setForm({ ...form, isSubmitting: true, transactionStatus: undefined });
 
-      const response = await Api.getInstance(userWallet!).sendMoney({
+      const response = await Api.sendMoney({
         fromAccount: userWallet?.props.accounts[0] as AccountOfWallet,
         toPublicAddress: form.toPublicAddress.value as string,
         amountInEther: form.amount.value as string,

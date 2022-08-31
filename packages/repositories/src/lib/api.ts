@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { AccountOfWallet, UserWallet } from '@skiawallet/entities';
+import { AccountOfWallet } from '@skiawallet/entities';
 
 import { Utils } from './utils';
 
@@ -13,25 +13,6 @@ export const jsonRpcProvider = new ethers.providers.JsonRpcProvider(nodeURL);
  * It's a singleton (it disables the creation multiple Api instances).
  */
 export class Api {
-  private static _instance?: Api;
-  private readonly _userWallet: UserWallet;
-
-  private constructor(userWallet: UserWallet) {
-    if (Api._instance) {
-      throw new Error('Use Api.instance instead of new.');
-    }
-
-    Api._instance = this;
-    this._userWallet = userWallet;
-  }
-
-  /**
-   * Get the Api instance.
-   */
-  static getInstance(userWallet: UserWallet) {
-    return Api._instance ?? (Api._instance = new Api(userWallet));
-  }
-
   /**
    * Send money (coins), not ERC20 tokens.
    *
@@ -40,7 +21,7 @@ export class Api {
    * @param amountInEther {string} Amount in ether to be sent
    * @param gasPriceInWei {string} Gas price in wei
    */
-  async sendMoney({
+  static async sendMoney({
     fromAccount,
     toPublicAddress,
     amountInEther,
