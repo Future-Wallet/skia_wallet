@@ -2,6 +2,38 @@ const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 
 /**
+ * Get environment variables
+ *
+ * @param {*} configuration
+ * @returns
+ */
+function getClientEnvironment(configuration) {
+  // Grab NODE_ENV and NX_* environment variables and prepare them to be
+  // injected into the application via DefinePlugin in webpack configuration.
+  const NX_APP = /^NX_/i;
+
+  const raw = Object.keys(process.env)
+    .filter((key) => NX_APP.test(key))
+    .reduce(
+      (env, key) => {
+        env[key] = process.env[key];
+        return env;
+      },
+      {
+        NODE_ENV: process.env.NODE_ENV || configuration,
+      }
+    );
+
+  // Stringify all values so we can feed into webpack DefinePlugin
+  return {
+    'process.env': Object.keys(raw).reduce((env, key) => {
+      env[key] = JSON.stringify(raw[key]);
+      return env;
+    }, {}),
+  };
+}
+
+/**
  * Dependencies used on core layers (eg. Winston, bip39...) needs the
  * [polyfill](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill),
  * a piece of code to provide modern functionality on older browsers that
@@ -17,6 +49,7 @@ module.exports = (config, context) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      new webpack.DefinePlugin(getClientEnvironment()),
     ],
     resolve: {
       fallback: {
