@@ -6,17 +6,17 @@
     "libsDir": "packages"
   },
   "affected": {
-    "defaultBase": "main"
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/next"
+    "defaultBase": "staging"
   },
   "implicitDependencies": {
     "package.json": {
       "dependencies": "*",
       "devDependencies": "*"
     },
-    ".eslintrc.json": "*"
+    ".eslintrc.json": "*",
+    "styles/**/*.css": [
+      "ui-wallet"
+    ]
   },
   "tasksRunnerOptions": {
     "default": {
