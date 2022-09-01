@@ -42,14 +42,21 @@ function getClientEnvironment(configuration) {
  * Combine default Webpack configuration from Nx with a custom
  * configuration. More here: https://nx.dev/recipe/customize-webpack
  */
-module.exports = (config, context) => {
+module.exports = (config) => {
+  console.log(config);
+  console.log(getClientEnvironment());
+
   return merge(config, {
     plugins: [
+      new webpack.DefinePlugin(getClientEnvironment()),
       // Work around for when `Buffer` is `undefined`
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      new webpack.DefinePlugin(getClientEnvironment()),
+      // Load environment variables (eg. `process.env.NODE_ENV`)
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
     ],
     resolve: {
       fallback: {
@@ -74,6 +81,7 @@ module.exports = (config, context) => {
         // assert: require.resolve('assert/'),
         fs: false,
       },
+      alias: {},
     },
   });
 };
