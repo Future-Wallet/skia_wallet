@@ -14,9 +14,11 @@ export class Address extends ValueObject<AddressProps> {
     super(props);
   }
 
-  public static create(props: AddressProps): Result<Address, Error<string>[]> {
-    const isAnAddress = Guard.isAnEvmAddress(props.value);
+  public static create(data: string): Result<Address, Error<string>[]> {
+    const isAnAddress = Guard.isAnEvmAddress(data);
 
-    return isAnAddress.ok ? Ok(new Address(props)) : Err(isAnAddress.val);
+    return isAnAddress.ok
+      ? Ok(new Address({ value: data }))
+      : Err(isAnAddress.val);
   }
 }
