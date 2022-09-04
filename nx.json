@@ -6,7 +6,7 @@
     "libsDir": "packages"
   },
   "affected": {
-    "defaultBase": "staging"
+    "defaultBase": "main"
   },
   "implicitDependencies": {
     "package.json": {
