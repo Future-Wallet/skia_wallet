@@ -10,8 +10,8 @@ import { Guard, GuardManyResults } from './guard';
 
 describe('class Guard', () => {
   describe('isAnEvmAddress()', () => {
+    let address: string;
     let result: GuardManyResults<string>;
-    let address;
     let typeOfErrors: string[];
 
     it(`approves '0xa9d48F598d7A573d840F318f40d77D5a50908c18'`, () => {

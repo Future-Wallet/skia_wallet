@@ -1,7 +1,7 @@
-/* eslint-disable */
 export default {
   displayName: 'common',
   preset: '../../jest.preset.js',
+  // For testing the layer Common, we don't use browser-like environment, but NodeJS.
   testEnvironment: 'node',
   globals: {
     'ts-jest': {
@@ -9,8 +9,8 @@ export default {
     },
   },
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest',
+    '^.+\\.ts$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts'],
+  moduleFileExtensions: ['ts', 'js'],
   coverageDirectory: '../../coverage/packages/common',
 };
