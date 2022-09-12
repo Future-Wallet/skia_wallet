@@ -43,9 +43,6 @@ function getClientEnvironment(configuration) {
  * configuration. More here: https://nx.dev/recipe/customize-webpack
  */
 module.exports = (config) => {
-  console.log(config);
-  console.log(getClientEnvironment());
-
   return merge(config, {
     plugins: [
       new webpack.DefinePlugin(getClientEnvironment()),
