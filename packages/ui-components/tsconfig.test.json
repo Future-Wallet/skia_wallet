@@ -6,14 +6,14 @@
     "types": [
       "jest",
       "node"
-    ],
-    // Necessary to import dependency uuid using CommonJS
-    "allowJs": true
+    ]
   },
   "include": [
     "jest.config.ts",
     "**/*.test.ts",
-    "**/*.spec.ts",
+    "**/*.test.tsx",
+    "**/*.test.js",
+    "**/*.test.jsx",
     "**/*.d.ts"
   ]
 }

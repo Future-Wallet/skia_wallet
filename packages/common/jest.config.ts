@@ -1,11 +1,11 @@
 export default {
   displayName: 'common',
   preset: '../../jest.preset.js',
-  // For testing the layer Common, we don't use browser-like environment, but NodeJS.
-  testEnvironment: 'node',
+  // For testing the layer Common, Jest needs to load the browser environment, not the NodeJS environment.
+  testEnvironment: 'jest-environment-jsdom',
   globals: {
     'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
+      tsconfig: '<rootDir>/tsconfig.test.json',
     },
   },
   transform: {
