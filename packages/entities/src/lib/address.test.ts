@@ -2,7 +2,7 @@ import { Error } from '@skiawallet/common';
 import { Result } from 'ts-results';
 import { Address } from './address';
 
-describe('class Address', () => {
+describe('value object Address', () => {
   let address: string;
   let result: Result<Address, Error<string>[]>;
 
