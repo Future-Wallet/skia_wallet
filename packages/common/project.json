@@ -2,6 +2,9 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/common/src",
   "projectType": "library",
+  "tags": [
+    "type:shared"
+  ],
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
@@ -38,6 +41,5 @@
         "codeCoverage": true
       }
     }
-  },
-  "tags": []
+  }
 }
