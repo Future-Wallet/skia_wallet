@@ -2,6 +2,9 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/ui-wallet/src",
   "projectType": "application",
+  "tags": [
+    "type:frontend-web"
+  ],
   "targets": {
     "build": {
       "executor": "@nrwl/web:webpack",
@@ -88,6 +91,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": []
+  }
 }

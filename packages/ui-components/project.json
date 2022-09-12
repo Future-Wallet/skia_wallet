@@ -2,7 +2,9 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/ui-components/src",
   "projectType": "library",
-  "tags": [],
+  "tags": [
+    "type:frontend-components"
+  ],
   "targets": {
     "build": {
       "executor": "@nrwl/web:rollup",
