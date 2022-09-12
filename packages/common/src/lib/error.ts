@@ -2,8 +2,8 @@
  * Parent class to be implemented on all kind of errors.
  */
 export abstract class Error<T> {
-  protected readonly data: T | null;
-  protected readonly message: string | null;
+  readonly data: T | null;
+  readonly message: string | null;
 
   /**
    *
