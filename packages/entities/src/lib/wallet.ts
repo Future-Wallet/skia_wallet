@@ -1,6 +1,7 @@
 import { Entity } from '@skiawallet/common';
 import * as bip39 from 'bip39';
 import { utils } from 'ethers';
+import { Mnemonic } from './mnemonic';
 
 export type AccountOfWalletProps = {
   mnemonicPhrase: string;
@@ -71,28 +72,16 @@ export type UserWalletProps = {
   accounts: AccountOfWallet[];
 };
 
+export type CreateUserWalletProps = {
+  mnemonic?: Mnemonic;
+};
+
 /**
  * It's based on Hierarchal Deterministic (HD) wallet, an standard created for Bitcoin.
  *
  * More info here: https://docs.ethers.io/v5/api/utils/hdnode/#hdnodes
  */
 export class UserWallet extends Entity<UserWalletProps> {
-  /**
-   * @param phrase {string}
-   */
-  constructor(phrase: string) {
-    const firstAccount = new AccountOfWallet(phrase);
-
-    const props: UserWalletProps = {
-      mnemonicPhrase: phrase,
-      privateAddress: createHdNode(phrase).privateKey,
-      publicAddress: createHdNode(phrase).address,
-      seed: bip39.mnemonicToSeedSync(phrase).toString('hex'),
-      accounts: [firstAccount],
-    };
-    super(props);
-  }
-
   /**
    * It consists of 12, 15, 18, 21 or 24 words long and separated
    * by the whitespace specified by the locale.
@@ -120,6 +109,41 @@ export class UserWallet extends Entity<UserWalletProps> {
 
   get accounts(): AccountOfWallet[] {
     return this.props.accounts;
+  }
+
+  /**
+   * @param phrase {string}
+   */
+  private constructor(props: UserWalletProps) {
+    // const firstAccount = new AccountOfWallet(phrase);
+
+    // const props: UserWalletProps = {
+    //   mnemonicPhrase: phrase,
+    //   privateAddress: createHdNode(phrase).privateKey,
+    //   publicAddress: createHdNode(phrase).address,
+    //   seed: bip39.mnemonicToSeedSync(phrase).toString('hex'),
+    //   accounts: [firstAccount],
+    // };
+    super(props);
+  }
+
+  /**
+   *
+   * @param props
+   */
+  public static create(props: CreateUserWalletProps) {
+    if (props.mnemonic == undefined) {
+      Mnemonic.create();
+    }
+    const firstAccount = new AccountOfWallet(props.mnemonic);
+
+    const props: UserWalletProps = {
+      mnemonicPhrase: phrase,
+      privateAddress: createHdNode(phrase).privateKey,
+      publicAddress: createHdNode(phrase).address,
+      seed: bip39.mnemonicToSeedSync(phrase).toString('hex'),
+      accounts: [firstAccount],
+    };
   }
 }
 
