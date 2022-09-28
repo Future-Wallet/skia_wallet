@@ -9,7 +9,50 @@
   ],
   "rules": {
     "no-unsanitized/method": "error",
-    "no-unsanitized/property": "error"
+    "no-unsanitized/property": "error",
+    "@nrwl/nx/enforce-module-boundaries": [
+      "error",
+      {
+        // Prevent to import transitive dependencies to decrease the
+        // software supply chain attacks.
+        "banTransitiveDependencies": true,
+        // Enforce dependency for the projects.
+        "depConstraints": [
+          {
+            "sourceTag": "type:frontend-web",
+            "onlyDependOnLibsWithTags": [
+              "type:frontend-components",
+              "type:backend-repositories",
+              "type:backend-entities",
+              "type:shared"
+            ]
+          },
+          {
+            "sourceTag": "type:frontend-components",
+            "onlyDependOnLibsWithTags": [
+              "type:backend-repositories",
+              "type:backend-entities",
+              "type:shared"
+            ]
+          },
+          {
+            "sourceTag": "type:backend-repositories",
+            "onlyDependOnLibsWithTags": [
+              "type:backend-repositories",
+              "type:backend-entities",
+              "type:shared"
+            ]
+          },
+          {
+            "sourceTag": "type:backend-entities",
+            "onlyDependOnLibsWithTags": [
+              "type:backend-entities",
+              "type:shared"
+            ]
+          }
+        ]
+      }
+    ]
   },
   "overrides": [
     {
@@ -56,49 +99,6 @@
         "plugin:@nrwl/nx/javascript"
       ],
       "rules": {}
-    }
-  ],
-  "@nrwl/nx/enforce-module-boundaries": [
-    "error",
-    {
-      // Prevent to import transitive dependencies to decrease the
-      // software supply chain attacks.
-      "banTransitiveDependencies": true,
-      // Enforce dependency for the projects.
-      "depConstraints": [
-        {
-          "sourceTag": "type:frontend-web",
-          "onlyDependOnLibsWithTags": [
-            "type:frontend-components",
-            "type:backend-repositories",
-            "type:backend-entities",
-            "type:shared"
-          ]
-        },
-        {
-          "sourceTag": "type:frontend-components",
-          "onlyDependOnLibsWithTags": [
-            "type:backend-repositories",
-            "type:backend-entities",
-            "type:shared"
-          ]
-        },
-        {
-          "sourceTag": "type:backend-repositories",
-          "onlyDependOnLibsWithTags": [
-            "type:backend-repositories",
-            "type:backend-entities",
-            "type:shared"
-          ]
-        },
-        {
-          "sourceTag": "type:backend-entities",
-          "onlyDependOnLibsWithTags": [
-            "type:backend-entities",
-            "type:shared"
-          ]
-        }
-      ]
     }
   ]
 }
