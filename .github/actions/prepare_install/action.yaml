@@ -1,0 +1,21 @@
+name: 'Prepare: Checkout and Install'
+description: 'Prepares the repo for a job by checking out and installing dependencies'
+inputs:
+  node-version:
+    description: 'The node version to setup'
+    required: true
+
+# outputs: - no outputs
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci

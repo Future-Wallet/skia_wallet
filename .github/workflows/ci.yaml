@@ -1,0 +1,91 @@
+# The continous integration flow.
+# 
+# The project uses this file to generate a checklist of tasks to be performed
+# for every commit.
+#
+# Inspired by https://github.com/typescript-eslint/typescript-eslint/blob/main/.github/workflows/ci.yml
+
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+env:
+  NODE_VERSION: 16
+
+defaults:
+  run:
+    shell: bash
+
+# Workflow for how the CI spawns jobs:
+# 1) Run the install and cache the install artefacts
+# 2) Run the build
+# 3) Run the tests
+
+jobs:
+  install:
+    name: Checkout and Install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/prepare-install
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+  build:
+    name: Build All Packages
+    needs: [install]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/prepare-install
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Build
+        uses: ./.github/actions/prepare-build
+
+  lint:
+    name: Lint
+    needs: [install]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lint-task: ['lint']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/prepare-install
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Check
+        run: yarn ${{ matrix.lint-task }}
+
+  tests:
+    name: Run all tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/prepare-install
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Build
+        uses: ./.github/actions/prepare-build
+
+      - name: Run all tests
+        run: npm test
+        env:
+          CI: true
