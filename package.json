@@ -9,7 +9,7 @@
     "test:entities--watch": "nx serve entities:test --watch",
     "test:repositories--watch": "nx serve repositories:test --watch",
     "lint": "nx run-many --target=lint --all --parallel",
-    "prepare:commit": "husky install ./husky",
+    "prepare": "husky install ./husky",
     "check:commit": "node ./scripts/.commit_lint.js"
   },
   "prettier": {
