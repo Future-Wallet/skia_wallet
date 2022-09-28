@@ -1,6 +1,6 @@
-import { AccountOfWallet, UserWallet } from '@skiawallet/entities';
-import * as bip39 from 'bip39';
+import { AccountOfWallet } from '@skiawallet/entities';
 import { utils, Wallet } from 'ethers';
+
 import { jsonRpcProvider } from './api';
 
 export class Utils {
@@ -41,27 +41,10 @@ export class Utils {
    * @param privateAddress {string}
    * @returns {Wallet}
    */
-  static createSignerFromAccountOfWallet(
-    // userWallet: UserWallet
-    account: AccountOfWallet
-  ): Wallet {
+  static createSignerFromAccountOfWallet(account: AccountOfWallet): Wallet {
     // It remove the `0x` of the private address.
-    const signer = new Wallet(
-      // userWallet.props.privateAddress.substring(2),
-      account.props.privateAddress,
-      jsonRpcProvider
-    );
+    const signer = new Wallet(account.props.privateAddress, jsonRpcProvider);
 
-    // const signer = new Wallet(account.publicAddress);
-    // const signer = new Wallet(account.publicAddress.substring(2));
-
-    // return signer.connect(jsonRpcProvider);
     return signer;
-  }
-
-  static generateMnemonic(): UserWallet {
-    const mnemonic = bip39.generateMnemonic();
-
-    return new UserWallet(mnemonic);
   }
 }
