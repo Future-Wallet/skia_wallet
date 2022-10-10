@@ -2,11 +2,11 @@
 
 /**
  * Validate if the commit message follows the commits guide https://github.com/Future-Wallet/skia-wallet/wiki/Commits
- * 
+ *
  * Inspired by Nx's repository https://github.com/nrwl/nx/blob/master/scripts/commit-lint.js
  */
 
-const { types, scopes } = require('../.cz-config.js');
+const { types, scopes } = require('./.commit_config.js');
 
 console.log('🐟🐟🐟 Validating git commit message 🐟🐟🐟');
 const gitMessage = require('child_process')
@@ -14,12 +14,10 @@ const gitMessage = require('child_process')
   .toString()
   .trim();
 
-const allowedTypes = types.map((type) => type.value);
-const allowedScopes = scopes.map((scope) => scope.name);
+const allowedTypes = types.map((type) => type.value).join('|');
+const allowedScopes = scopes.map((scope) => scope.name).join('|');
 
-const commitMsgRegex = `(${allowedTypes.join('|')})\\((${allowedScopes.join(
-  '|'
-)})\\):\\s(([a-z0-9:\-\s])+)`;
+const commitMsgRegex = `(${allowedTypes})\\((${allowedScopes})\\)!?:\\s(([a-z0-9:\-\s])+)`;
 
 const matchCommit = new RegExp(commitMsgRegex, 'g').test(gitMessage);
 const matchRevert = /Revert/gi.test(gitMessage);
@@ -34,17 +32,18 @@ if (exitCode === 0) {
       '-------------------------------------------------------------------\n' +
       gitMessage +
       '\n-------------------------------------------------------------------' +
-      '\n\n 👉️ Does not follow the commit message convention specified in the CONTRIBUTING.MD file.'
+      '\n\n 👉️ Does not follow the commit message convention specified in the Commit guide https://github.com/Future-Wallet/skia-wallet/wiki/Commits.' +
+      '\n\n To edit your last commit message type:\n\tgit commit --amend -m "your_new_message'
   );
   console.log('\ntype(scope): subject \n BLANK LINE \n body');
   console.log('\n');
-  console.log(`possible types: ${allowedTypes.join('|')}`);
-  console.log(
-    `possible scopes: ${allowedScopes.join('|')} (if unsure use "core")`
-  );
+  console.log(`possible types: ${allowedTypes}`);
+  console.log(`possible scopes: ${allowedScopes} (if unsure use "*")`);
   console.log(
     '\nEXAMPLE: \n' +
-      'feat(nx): add an option to generate lazy-loadable modules\n'
+      'fix(entities): add the validation for `privateKey` when creating a new account\n' +
+      'feat(ui-components): show the progress button\n' +
+      'docs(common): add explanation for class `Error`\n'
   );
 }
 process.exit(exitCode);

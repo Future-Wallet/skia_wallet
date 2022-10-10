@@ -2,8 +2,9 @@
 # If the script succeeds, it allows to commit.
 
 #!/usr/bin/env sh
+
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm test &&
-npm lint &&
-npm check:commit
+npm run lint &&
+npm run check:commit

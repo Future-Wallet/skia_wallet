@@ -1,7 +1,9 @@
 /**
- * Restrictions for the commit message following the commits  guide
+ * This configuration is used by the NPM package `git-cz` https://www.npmjs.com/package/git-cz.
+ *
+ * Restrictions for the commit message following the commits guide
  * https://github.com/Future-Wallet/skia-wallet/wiki/Commits
- * 
+ *
  * Inspired by Nx's repository https://github.com/nrwl/nx/commits/master/.cz-config.js
  */
 module.exports = {
@@ -15,25 +17,47 @@ module.exports = {
     },
     {
       value: 'improv',
-      name: "improv:    An improvement, neither a bug fix nor a refactoring",
+      name: 'improv:    An improvement, neither a bug fix nor a refactoring',
     },
     {
       value: 'chore',
       name: "chore:    Other changes that don't modify the packages or test files",
     },
     {
-      value: 'build',
-      name: "build:    Debug tasks, edit git configuration, modify the build process, edit scripts, etc",
+      value: 'ci',
+      name: 'ci:    Debug tasks, edit git configuration, build process, scripts, etc',
     },
   ],
 
   scopes: [
     { name: 'common', description: 'Anything related to the package Common' },
-    { name: 'entities', description: 'Anything related to the package Entities' },
-    { name: 'repositories', description: 'Anything related to the package Repositories' },
-    { name: 'ui-components', description: 'Anything related to the package containing the frontend components' },
-    { name: 'ui-wallet', description: 'Anything related to the package with wallet website' },
-    { name: '*', description: 'Multiple packages' },
+    {
+      name: 'entities',
+      description: 'Anything related to the package Entities',
+    },
+    {
+      name: 'repositories',
+      description: 'Anything related to the package Repositories',
+    },
+    {
+      name: 'ui-components',
+      description:
+        'Anything related to the package containing the frontend components',
+    },
+    {
+      name: 'ui-wallet',
+      description: 'Anything related to the package with the wallet website',
+    },
+    {
+      name: 'repo',
+      description: 'Anything related to managing the repo itself',
+    },
+    {
+      name: 'test',
+      description: 'Anything testing specific (e.g., jest or cypress)',
+    },
+    // Regex needs [ and ], else an asterix alone causes problems.
+    { name: '[*]', description: 'Multiple scopes' },
   ],
 
   // Add tickets references (Github's issues or other task management tickets id)
