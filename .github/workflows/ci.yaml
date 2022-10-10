@@ -1,5 +1,5 @@
 # The continous integration flow.
-# 
+#
 # The project uses this file to generate a checklist of tasks to be performed
 # for every commit.
 #
@@ -13,7 +13,7 @@ on:
       - main
   pull_request:
     branches:
-      - '**'
+      - "**"
 
 env:
   NODE_VERSION: 16
@@ -35,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install
-        uses: ./.github/actions/prepare-install
+        uses: ./.github/actions/prepare_install
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -47,11 +47,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install
-        uses: ./.github/actions/prepare-install
+        uses: ./.github/actions/prepare_install
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Build
-        uses: ./.github/actions/prepare-build
+        uses: ./.github/actions/prepare_build
 
   lint:
     name: Lint
@@ -59,12 +59,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        lint-task: ['lint']
+        lint-task: ["lint"]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install
-        uses: ./.github/actions/prepare-install
+        uses: ./.github/actions/prepare_install
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -79,11 +79,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install
-        uses: ./.github/actions/prepare-install
+        uses: ./.github/actions/prepare_install
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Build
-        uses: ./.github/actions/prepare-build
+        uses: ./.github/actions/prepare_build
 
       - name: Run all tests
         run: npm test

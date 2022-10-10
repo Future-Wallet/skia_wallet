@@ -8,7 +8,7 @@
 
 const { types, scopes } = require('./.commit_config.js');
 
-console.log('🐟🐟🐟 Validating git commit message 🐟🐟🐟');
+console.log('🐟🐟🐟 Validating git commit message 🐟🐟🐟\n');
 const gitMessage = require('child_process')
   .execSync('git log -1 --no-merges')
   .toString()
@@ -17,7 +17,7 @@ const gitMessage = require('child_process')
 const allowedTypes = types.map((type) => type.value).join('|');
 const allowedScopes = scopes.map((scope) => scope.name).join('|');
 
-const commitMsgRegex = `(${allowedTypes})\\((${allowedScopes})\\)!?:\\s(([a-z0-9:\-\s])+)`;
+const commitMsgRegex = `(${allowedTypes})\\((${allowedScopes})\\)!?:\\s(([a-z0-9:(\\-\s])+)`;
 
 const matchCommit = new RegExp(commitMsgRegex, 'g').test(gitMessage);
 const matchRevert = /Revert/gi.test(gitMessage);
@@ -25,7 +25,7 @@ const matchRelease = /Release/gi.test(gitMessage);
 const exitCode = +!(matchRelease || matchRevert || matchCommit);
 
 if (exitCode === 0) {
-  console.log('Commit ACCEPTED 👍');
+  console.log('Commit ACCEPTED 👍\n');
 } else {
   console.log(
     '[Error]: Oh no! 😦 Your commit message: \n' +
