@@ -2,6 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      // Before hand, you need to run the web. Check out package.json
+      "name": "Launch on Chrome lh:4200",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/packages/ui-wallet",
+      "presentation": {
+        "group": "frontend",
+      }
+    },
+    {
       "name": "Test common",
       "request": "launch",
       "runtimeArgs": [
@@ -61,23 +72,5 @@
         "group": "frontend",
       }
     },
-    {
-      "name": "Attach to Chrome",
-      "port": 9222,
-      "request": "attach",
-      "type": "chrome",
-      "webRoot": "${workspaceFolder}",
-      "presentation": {
-        "group": "frontend",
-      }
-    },
-    {
-      "name": "Chrome lh:4200",
-      "type": "chrome",
-      "request": "launch",
-      "presentation": {
-        "group": "frontend",
-      }
-    }
   ]
 }
