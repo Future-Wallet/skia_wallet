@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil';
 
 import { stateFormMnenomic, stateUserWallet } from '../state/wallet';
 import { routes } from '../utils/routes';
-import { UserWallet } from '@skiawallet/entities';
+import { Mnemonic, MnemonicLocale, UserWallet } from '@skiawallet/entities';
 import Button from './atomic/button';
 
 export default function ImportWallet(): JSX.Element {
@@ -14,27 +14,37 @@ export default function ImportWallet(): JSX.Element {
   const [importing, setImporting] = useState(false);
 
   const onChangeTextArea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMemonicInput({ value: event.target.value, error: '' });
+    setMemonicInput({ value: event.target.value, error: null });
   };
 
   const handleUserWallet = () => {
     let importedUserWallet;
+    const mnemonic = Mnemonic.create({
+      value: mnemonicInput.value,
+      locale: MnemonicLocale.en,
+    });
 
     setImporting(true);
 
-    try {
-      importedUserWallet = new UserWallet(mnemonicInput.value);
+    if (mnemonic.err) {
+      console.error(mnemonic.val);
 
-      setWalletOfUser[1](importedUserWallet);
+      setMemonicInput({
+        ...mnemonicInput,
+        ...{ error: mnemonic.val },
+      });
+    } else {
+      importedUserWallet = UserWallet.create({ mnemonic: mnemonic.val });
 
-      // Redirect to the home screen
-      navigate(`/${routes.home}`, { replace: true });
-    } catch (err) {
-      console.error(err);
-      if (err instanceof Error) {
+      if (importedUserWallet.ok) {
+        setWalletOfUser[1](importedUserWallet.val);
+
+        // Redirect to the home screen
+        navigate(`/${routes.home}`, { replace: true });
+      } else {
         setMemonicInput({
           ...mnemonicInput,
-          ...{ error: err.toString() },
+          ...{ error: importedUserWallet.val },
         });
       }
     }
@@ -55,8 +65,18 @@ export default function ImportWallet(): JSX.Element {
           onChange={onChangeTextArea}
         />
 
-        {mnemonicInput.error !== undefined ? (
-          <p className="mb-3 text-sm text-red-600">{mnemonicInput.error}</p>
+        {mnemonicInput.error !== null ? (
+          Array.isArray(mnemonicInput.error) ? (
+            mnemonicInput.error.map((err, index) => (
+              <p key={index} className="mb-3 text-sm text-red-600">
+                {err.message}
+              </p>
+            ))
+          ) : (
+            <p className="mb-3 text-sm text-red-600">
+              {mnemonicInput.error.message}
+            </p>
+          )
         ) : null}
       </form>
 

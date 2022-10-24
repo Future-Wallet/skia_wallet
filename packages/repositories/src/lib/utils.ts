@@ -1,5 +1,6 @@
 import { AccountOfWallet } from '@skiawallet/entities';
 import { utils, Wallet } from 'ethers';
+import { HDNode } from 'ethers/lib/utils';
 
 import { jsonRpcProvider } from './api';
 
@@ -38,12 +39,15 @@ export class Utils {
    * >
    * > More info on https://docs.ethers.io/v5/api/signer/
    *
-   * @param privateAddress {string}
+   * @param account {AccountOfWallet}
    * @returns {Wallet}
    */
   static createSignerFromAccountOfWallet(account: AccountOfWallet): Wallet {
     // It remove the `0x` of the private address.
-    const signer = new Wallet(account.props.privateAddress, jsonRpcProvider);
+    const signer = new Wallet(
+      HDNode.fromMnemonic(account.mnemonicPhrase.value).privateKey,
+      jsonRpcProvider
+    );
 
     return signer;
   }

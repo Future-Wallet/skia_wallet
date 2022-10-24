@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { AccountOfWallet } from '@skiawallet/entities';
+import { AccountOfWallet, Address } from '@skiawallet/entities';
 
 import { Utils } from './utils';
 
@@ -43,52 +43,8 @@ export class Api {
     } catch (err) {
       throw Error(`The amount ${amountInEther} is an invalid format`);
     }
-
-    // const provider = await new ethers.providers.JsonRpcProvider(
-    //   'https://rpc.ankr.com/avalanche_fuji'
-    // );
-
-    // We get the input values from user -- Must input 0x Address and Amount to send
-    // const { account2, amount } = formInput;
-
-    // // Smart contracts uses 18 extra decimals so we have to transform the value into basic token value
-    // const amountInEthers = Utils.convertNumberToEthers(amount);
-
-    // // We use the private key to get the full address instance
-    // // It substrings the `0x` of the private key.
-    // const accountOfWallet = new Wallet(fromAccount.privateKey.substring(2));
-    // // We get the signature information of the user
-    // const signerOfWallet = firstAccountOfWallet.connect(provider);
-
-    // We get the balance of both addresses
-    // const senderBalanceBefore = await jsonRpcProvider.getBalance(addressOfUser);
-    // const senderBalanceBefore = await jsonRpcProvider.getBalance(
-    //   fromAccount.publicAddress
-    // );
-
-    // const recieverBalanceBefore = await jsonRpcProvider.getBalance(account2);
-    // const recieverBalanceBefore = await jsonRpcProvider.getBalance(
-    //   toPublicAddress
-    // );
-    // console.log(
-    //   `\nSender balance before: ${ethers.utils.formatEther(
-    //     senderBalanceBefore
-    //   )}`
-    // );
-    // console.log(
-    //   `reciever balance before: ${ethers.utils.formatEther(
-    //     recieverBalanceBefore
-    //   )}\n`
-    // );
-
     const transaction = {
-      // from: addressOfUser, // Sender
-      // to: account2, // Reciever
-      // value: sendValue, // Amount sending
-      // nonce: provider.getTransactionCount(addressOfUser, 'latest'), // Nonce of address
-      // gasLimit: ethers.utils.hexlify(100000), // 100000 standard
-      // gasPrice: gasPrice, // GasPrice we got earlier
-      from: fromAccount.props.publicAddress,
+      from: fromAccount.props.publicAddress.props.value,
       to: toPublicAddress,
       value: Utils.convertEtherToWei(amountInEther),
       // An account nonce is a transaction counter in each account.
@@ -97,17 +53,15 @@ export class Api {
       // and over to continually drain A’s balance, but the account
       // nonce can prevent that.
       nonce: jsonRpcProvider.getTransactionCount(
-        fromAccount.props.publicAddress,
+        fromAccount.props.publicAddress.props.value,
         'latest'
       ),
       // 100000 is the standard
       gasLimit: ethers.utils.hexlify(100000),
       gasPrice: ethers.BigNumber.from(gasPriceInWei),
     };
-    console.log(transaction);
 
     return await Utils.createSignerFromAccountOfWallet(
-      // this._userWallet
       fromAccount
     ).sendTransaction(transaction);
   }
@@ -118,8 +72,10 @@ export class Api {
    * @params publicAddressOfAccount {string}
    * @returns {string} Balance in ether
    */
-  static async getBalance(publicAddressOfAccount: string): Promise<string> {
-    const balance = await jsonRpcProvider.getBalance(publicAddressOfAccount);
+  static async getBalance(publicAddressOfAccount: Address): Promise<string> {
+    const balance = await jsonRpcProvider.getBalance(
+      publicAddressOfAccount.value
+    );
 
     // Convert a currency unit from `wei` to `ether`
     return ethers.utils.formatEther(balance);

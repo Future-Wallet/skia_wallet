@@ -1,78 +1,108 @@
-import { Entity } from '@skiawallet/common';
+import { Entity, EntityProps, Error } from '@skiawallet/common';
 import * as bip39 from 'bip39';
 import { utils } from 'ethers';
-import { Mnemonic } from './mnemonic';
+import { Err, Ok, Result } from 'ts-results';
 
-export type AccountOfWalletProps = {
-  mnemonicPhrase: string;
-  /**
-   * In Ethereum world it's `HdNode.privateKey`.
-   */
-  privateAddress: string;
+import { Address } from './address';
+import { Mnemonic, MnemonicLocale } from './mnemonic';
+import {
+  ErrorWalletInvalidDerivationOfHdNode,
+  ErrorWalletInvalidHdNode,
+} from './wallet_errors';
+
+export interface AccountOfWalletProps extends EntityProps {
+  mnemonicPhrase: Mnemonic;
   /**
    * In Ethereum world it's `HdNode.address`.
    */
-  publicAddress: string;
+  publicAddress: Address;
   /**
    * In Ethereum world it's `Mnemonic.path`.
    */
   path: string;
-  language: string;
+}
+
+export type AccountOfWalletParameters = {
+  phrase: string;
+  locale: MnemonicLocale;
+  number?: 1;
 };
 
 export class AccountOfWallet extends Entity<AccountOfWalletProps> {
   /**
    * @param phrase {string}
    */
-  constructor(phrase: string) {
-    const firstAccount = createChildOfHdNode(phrase, 0);
-
-    if (firstAccount.mnemonic === undefined)
-      throw Error('It can code the language of the account');
-
-    const props: AccountOfWalletProps = {
-      mnemonicPhrase: phrase,
-      privateAddress: firstAccount.privateKey,
-      publicAddress: firstAccount.address,
-      path: firstAccount.path,
-      language: firstAccount.mnemonic.locale,
-    };
-
+  constructor(props: AccountOfWalletProps) {
     super(props);
   }
 
-  get mnemonicPhrase(): string {
+  get mnemonicPhrase(): Mnemonic {
     return this.props.mnemonicPhrase;
   }
-  get privateAddress(): string {
-    return this.props.privateAddress;
-  }
-  get publicAddress(): string {
+  get publicAddress(): Address {
     return this.props.publicAddress;
   }
   get path(): string {
     return this.props.path;
   }
-  get language(): string {
-    return this.props.language;
+
+  public static create({
+    phrase,
+    locale = MnemonicLocale.en,
+  }: AccountOfWalletParameters): Result<
+    AccountOfWallet,
+    Error<string | number>[]
+  > {
+    let accountHdNode, mnemonicPhrase, publicAddress;
+    const errors: Error<string | number>[] = [];
+
+    // It creates automatically a random mnemonic.
+    if (phrase == undefined) {
+      mnemonicPhrase = Mnemonic.create({ locale: MnemonicLocale.en });
+    } else {
+      mnemonicPhrase = Mnemonic.create({ locale, value: phrase });
+    }
+
+    if (mnemonicPhrase.ok) {
+      // For now, we only create the subaccount 0.
+      accountHdNode = createChildOfHdNode(mnemonicPhrase.val.value, 0);
+
+      if (accountHdNode.ok) {
+        publicAddress = Address.create(accountHdNode.val.address);
+        if (publicAddress.err) errors.push(...publicAddress.val);
+
+        if (mnemonicPhrase.ok && accountHdNode.ok && publicAddress.ok) {
+          return Ok(
+            new AccountOfWallet({
+              mnemonicPhrase: mnemonicPhrase.val,
+              publicAddress: publicAddress.val,
+              path: accountHdNode.val.path,
+            })
+          );
+        }
+      } else {
+        errors.push(accountHdNode.val);
+      }
+    } else {
+      errors.push(...mnemonicPhrase.val);
+    }
+
+    return Err(errors);
   }
 }
 
-export type UserWalletProps = {
-  mnemonicPhrase: string;
+// export interface UserWalletProps extends EntityProps {
+export interface UserWalletProps extends EntityProps {
+  mnemonicPhrase: Mnemonic;
   seed: string;
-  /**
-   * In Ethereum world it's `HdNode.privateKey`.
-   */
-  privateAddress: string;
   /**
    * In Ethereum world it's `HdNode.address`.
    */
-  publicAddress: string;
+  publicAddress: Address;
   accounts: AccountOfWallet[];
-};
+}
 
-export type CreateUserWalletProps = {
+export type UserWalletParameters = {
   mnemonic?: Mnemonic;
 };
 
@@ -82,11 +112,15 @@ export type CreateUserWalletProps = {
  * More info here: https://docs.ethers.io/v5/api/utils/hdnode/#hdnodes
  */
 export class UserWallet extends Entity<UserWalletProps> {
+  private constructor(props: UserWalletProps) {
+    super(props);
+  }
+
   /**
    * It consists of 12, 15, 18, 21 or 24 words long and separated
-   * by the whitespace specified by the locale.
+   * by the whitespace specified by the language.
    */
-  get mnemonicPhrase(): string {
+  get mnemonicPhrase(): Mnemonic {
     return this.props.mnemonicPhrase;
   }
 
@@ -99,11 +133,7 @@ export class UserWallet extends Entity<UserWalletProps> {
     return this.props.seed;
   }
 
-  get privateAddress(): string {
-    return this.props.privateAddress;
-  }
-
-  get publicAddress(): string {
+  get publicAddress(): Address {
     return this.props.publicAddress;
   }
 
@@ -112,63 +142,120 @@ export class UserWallet extends Entity<UserWalletProps> {
   }
 
   /**
-   * @param phrase {string}
-   */
-  private constructor(props: UserWalletProps) {
-    // const firstAccount = new AccountOfWallet(phrase);
-
-    // const props: UserWalletProps = {
-    //   mnemonicPhrase: phrase,
-    //   privateAddress: createHdNode(phrase).privateKey,
-    //   publicAddress: createHdNode(phrase).address,
-    //   seed: bip39.mnemonicToSeedSync(phrase).toString('hex'),
-    //   accounts: [firstAccount],
-    // };
-    super(props);
-  }
-
-  /**
+   * It creates a wallet for the user.
    *
-   * @param props
+   * If no mnemonic string is provided, it generates automatically
+   * a new wallet for the user.
+   *
+   * For now, it only creates one sub account.
    */
-  public static create(props: CreateUserWalletProps) {
-    if (props.mnemonic == undefined) {
-      Mnemonic.create();
-    }
-    const firstAccount = new AccountOfWallet(props.mnemonic);
+  public static create(
+    params?: UserWalletParameters
+  ): Result<UserWallet, Error<string | number>[]> {
+    const locale = MnemonicLocale.en,
+      accounts = [];
+    let hdNode, mnemonicPhrase, publicAddress, seed;
+    const errors: Error<string | number>[] = [];
 
-    const props: UserWalletProps = {
-      mnemonicPhrase: phrase,
-      privateAddress: createHdNode(phrase).privateKey,
-      publicAddress: createHdNode(phrase).address,
-      seed: bip39.mnemonicToSeedSync(phrase).toString('hex'),
-      accounts: [firstAccount],
-    };
+    // It creates automatically a random mnemonic.
+    if (params == undefined || params.mnemonic == undefined) {
+      mnemonicPhrase = Mnemonic.create({ locale });
+    } else {
+      mnemonicPhrase = Mnemonic.create({
+        locale,
+        value: params.mnemonic.value,
+      });
+    }
+
+    if (mnemonicPhrase.ok) {
+      hdNode = createHdNode(mnemonicPhrase.val.value);
+
+      if (hdNode.ok) {
+        publicAddress = Address.create(hdNode.val.address);
+        if (publicAddress.err) errors.push(...publicAddress.val);
+
+        seed = bip39
+          .mnemonicToSeedSync(mnemonicPhrase.val.value)
+          .toString('hex');
+
+        const firstAccount = AccountOfWallet.create({
+          phrase: mnemonicPhrase.val.value,
+          locale,
+          number: 1,
+        });
+        if (firstAccount.err) errors.push(...firstAccount.val);
+        else accounts.push(firstAccount.val);
+
+        if (mnemonicPhrase.ok && publicAddress.ok && firstAccount.ok) {
+          return Ok(
+            new UserWallet({
+              mnemonicPhrase: mnemonicPhrase.val,
+              publicAddress: publicAddress.val,
+              seed,
+              accounts,
+            })
+          );
+        }
+      } else {
+        errors.push(hdNode.val);
+      }
+    } else {
+      errors.push(...mnemonicPhrase.val);
+    }
+
+    return Err(errors);
   }
 }
 
 /**
+ * It creates a Hierarchal Deterministic wallet.
+ *
+ * A standard created for Bitcoin, but lends itself well to a wide variety of Blockchains which rely on secp256k1 private keys.
+ *
+ * More on [docs.ethers.io](https://docs.ethers.io/v5/api/utils/hdnode/).
  *
  * @param mnemonic
  * @param number
  */
-function createHdNode(mnemonic: string): utils.HDNode {
-  // It sincronizes the mnemonic to be EVM compatible
-  return utils.HDNode.fromMnemonic(mnemonic);
+function createHdNode(
+  mnemonicPhrase: string
+): Result<utils.HDNode, ErrorWalletInvalidHdNode> {
+  try {
+    // It sincronizes the mnemonic to be EVM compatible
+    const hdNode = utils.HDNode.fromMnemonic(mnemonicPhrase);
+
+    return Ok(hdNode);
+  } catch (err) {
+    return Err(new ErrorWalletInvalidHdNode(mnemonicPhrase));
+  }
 }
+
 /**
- * Creates a dhil of HdNode by deriving the path of its parent HdNode.
+ * Creates a child of HDNode by deriving the path of its parent HDNode.
  *
  * More info on https://docs.ethers.io/v5/api/utils/hdnode/#HDNode-derivePath
  *
  * @param mnemonic string
- * @param number number - Only use
+ * @param number number - Only use 0.
  * @returns
  */
-function createChildOfHdNode(mnemonic: string, number: number): utils.HDNode {
+function createChildOfHdNode(
+  mnemonicPhrase: string,
+  number: 0
+): Result<
+  utils.HDNode,
+  ErrorWalletInvalidHdNode | ErrorWalletInvalidDerivationOfHdNode
+> {
   // It sincronizes the mnemonic to be EVM compatible
-  const hdNode = createHdNode(mnemonic);
+  const hdNode = createHdNode(mnemonicPhrase);
+  if (hdNode.err) {
+    return Err(hdNode.val);
+  }
 
-  // It retrieves the package data of the HdNode.
-  return hdNode.derivePath(`m/44'/60'/0'/0/${number}`);
+  // It retrieves the package data of the HDNode.
+  try {
+    return Ok(hdNode.val.derivePath(`m/44'/60'/0'/0/${number}`));
+  } catch (err) {
+    return Err(new ErrorWalletInvalidDerivationOfHdNode(number));
+  }
 }

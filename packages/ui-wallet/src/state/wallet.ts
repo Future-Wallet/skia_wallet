@@ -3,10 +3,11 @@ import { UserWallet } from '@skiawallet/entities';
 
 import { localStorageRecoil } from './storage';
 import { Api } from '@skiawallet/repositories';
+import { Error as CError } from '@skiawallet/common';
 
 type FormMnemonicInput = {
   value: string;
-  error?: string | null;
+  error: CError<unknown> | CError<unknown>[] | null;
 };
 
 export const stateFormMnenomicKey = 'state_form_mnenomic';
@@ -14,12 +15,10 @@ export const stateFormMnenomicKey = 'state_form_mnenomic';
 /**
  * State of the form for the mnemonic phrase
  *
- * @returns atom
+ * @returns Recoil's atom
  */
 export const stateFormMnenomic = atom<FormMnemonicInput>({
   key: stateFormMnenomicKey,
-  // // get initial state from local storage
-  // default: JSON.parse(localStorage.getItem('user'))
   default: {
     value: '',
     error: null,
@@ -29,10 +28,15 @@ export const stateFormMnenomic = atom<FormMnemonicInput>({
 export const stateUserWalletKey = 'state_user_wallet';
 
 /**
- * State of user wallet.
+ * State of the user wallet.
  *
- * @returns UserWallet or null
+ * @returns Instance of `UserWallet` or `null`
  */
+// export const stateUserWallet = atom<UserWallet | null>({
+//   key: stateUserWalletKey,
+//   default: null,
+//   effects: [localStorageRecoil<UserWallet | null>(stateUserWalletKey)],
+// });
 export const stateUserWallet = atom<UserWallet | null>({
   key: stateUserWalletKey,
   default: null,
@@ -56,31 +60,11 @@ export const stateSelectorBalanceOfAccount = selector<string | null>({
     const wallet = get(stateUserWallet);
 
     if (wallet != null) {
-      return await Api.getBalance(wallet.props.accounts[0].props.publicAddress);
+      return await Api.getBalance(
+        (wallet as UserWallet).accounts[0].publicAddress
+      );
     } else {
       throw Error('Error loading wallet');
     }
   },
-  // set: ({ set }, newValue) => {
-  //   set(stateBalanceOfAccount, newValue);
-  // },
 });
-// export const stateBalanceOfAccount = atom<string | null>({
-//   key: stateBalanceOfAccountKey,
-//   default: null,
-//   effects: [
-//     ({ setSelf, getLoadable }) => {
-//       console.log('getLoadable 1');
-//       const wallet = getLoadable(stateUserWallet).contents;
-
-//       console.log('getLoadable 2');
-//       if (wallet != null) {
-//         setSelf(
-//           Api.getBalance(wallet.props.accounts[0].props.publicAddress).then(
-//             (balance) => balance
-//           )
-//         );
-//       }
-//     },
-//   ],
-// });

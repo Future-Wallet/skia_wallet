@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { Utils } from '@skiawallet/repositories';
 
 import { stateUserWallet } from '../state/wallet';
 import { routes } from '../utils/routes';
 import Button from './atomic/button';
+import { UserWallet } from '@skiawallet/entities';
 
 export default function CreateWallet(): JSX.Element | null {
   const navigate = useNavigate();
@@ -15,7 +15,10 @@ export default function CreateWallet(): JSX.Element | null {
   function handleCreateWallet() {
     setCreating(true);
 
-    setUserWallet(Utils.generateMnemonic());
+    const userWallet = UserWallet.create();
+
+    if (userWallet.ok) setUserWallet(userWallet.val);
+    else console.error(userWallet.val);
 
     setCreating(false);
   }
@@ -42,7 +45,7 @@ export default function CreateWallet(): JSX.Element | null {
             rows={4}
             readOnly={true}
             className="mt-2 mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            value={userWallet.props.mnemonicPhrase}
+            value={userWallet.mnemonicPhrase.value}
           />
           <Button onClick={() => navigate(`/${routes.home}`)}>
             Go to your wallet

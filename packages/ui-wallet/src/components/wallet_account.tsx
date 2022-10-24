@@ -1,24 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { UserWallet } from '@skiawallet/entities';
 import { ReactNode, FC, useEffect, useState } from 'react';
 import {
-  // selector,
   useRecoilRefresher_UNSTABLE,
-  // useRecoilState,
-  // useRecoilTransaction_UNSTABLE,
-  // useRecoilValueLoadable,
   useRecoilValue,
   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
-// import { usePreviousStateRecoil } from '../state/utils';
 
 import {
-  // stateBalanceOfAccount,
   stateSelectorBalanceOfAccount,
   stateUserWallet,
 } from '../state/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
-// import Api from '../utils/api';
-import { UserWallet } from '@skiawallet/entities';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
@@ -138,8 +130,8 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   // }, [wallet, setBalanceOfAccount]);
 
   async function copyPublicAddressToClipboard() {
-    if (wallet !== undefined && wallet?.props.accounts[0] !== undefined) {
-      await copyValueToClipboard(wallet.props.accounts[0].props.publicAddress);
+    if (wallet !== null && wallet.accounts[0] !== undefined) {
+      await copyValueToClipboard(wallet.accounts[0].publicAddress.value);
     }
   }
 
@@ -179,9 +171,9 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
           className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5"
           type="text"
           readOnly
-          value={wallet?.props.accounts[0].props.publicAddress}
+          value={wallet?.accounts[0].publicAddress.value}
           onClick={() => copyPublicAddressToClipboard()}
-          placeholder={wallet?.props.accounts[0].props.publicAddress}
+          placeholder={wallet?.accounts[0].publicAddress.value}
         />
         <Button onClick={() => copyPublicAddressToClipboard()}>
           Copy address

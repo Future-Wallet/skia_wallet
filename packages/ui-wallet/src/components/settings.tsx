@@ -14,12 +14,12 @@ export default function Settings(): JSX.Element {
         rows={3}
         readOnly={true}
         className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        value={userWallet?.props.mnemonicPhrase}
+        value={userWallet?.mnemonicPhrase.value}
       />
       <Button
         onClick={() => {
           if (userWallet !== null) {
-            copyValueToClipboard(userWallet.props.mnemonicPhrase);
+            copyValueToClipboard(userWallet.mnemonicPhrase.value);
           }
         }}
       >
