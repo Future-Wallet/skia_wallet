@@ -8,7 +8,7 @@ import {
   ErrorAddressInvalidChecksum,
   ErrorAddressLessThan42Characters,
   ErrorAddressNotHexadecimal,
-} from './error_address';
+} from './guard_error';
 
 export type GuardResult<T> = Result<GuardResponse, Error<T>>;
 export type GuardManyResults<T> = Result<GuardResponse, Error<T>[]>;

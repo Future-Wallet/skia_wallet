@@ -5,7 +5,7 @@ import {
   ErrorAddressGreaterThan42Characters,
   ErrorAddressNotHexadecimal,
   ErrorAddressInvalidChecksum,
-} from './error_address';
+} from './guard_error';
 import { Guard, GuardManyResults } from './guard';
 
 describe('class Guard', () => {
