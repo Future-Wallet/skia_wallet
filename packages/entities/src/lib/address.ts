@@ -1,7 +1,7 @@
 import { Err, Ok, Result } from 'ts-results';
-import { Error, Guard, ValueObject } from '@skiawallet/common';
+import { EntityProps, Error, Guard, ValueObject } from '@skiawallet/common';
 
-interface AddressProps {
+interface AddressProps extends EntityProps {
   value: string;
 }
 

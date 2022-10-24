@@ -1,4 +1,4 @@
-import { Entity, Error } from '@skiawallet/common';
+import { Entity, EntityProps, Error } from '@skiawallet/common';
 import * as bip39 from 'bip39';
 import { Err, Ok, Result } from 'ts-results';
 import * as dompurify from 'dompurify';
@@ -36,11 +36,11 @@ export enum MnemonicLocale {
   zh_t = 'chinese_traditional',
 }
 
-export type MnemonicProps = {
+export interface MnemonicProps extends EntityProps {
   value: string;
   locale: MnemonicLocale;
   wordsCounter: number;
-};
+}
 
 export type MnemonicParameters = {
   locale: MnemonicLocale;
@@ -72,8 +72,8 @@ export class Mnemonic extends Entity<MnemonicProps> {
   }
 
   public static create({
-    value,
     locale,
+    value,
   }: MnemonicParameters): Result<Mnemonic, Error<string>[]> {
     const errors: Error<string>[] = [];
     // Japanese needs two ideographic spaces according to [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md#japanese).
