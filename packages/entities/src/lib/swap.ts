@@ -12,7 +12,7 @@ interface SwapProps {
 }
 
 export class Swap extends Entity<SwapProps> {
-  get id(): UniqueEntityId {
+  get id(): UniqueEntityId | undefined {
     return this._id;
   }
 

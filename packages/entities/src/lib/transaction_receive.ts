@@ -7,7 +7,7 @@ export interface TransactionReceiveProps {
 }
 
 export class TransactionReceive extends Entity<TransactionReceiveProps> {
-  get id(): UniqueEntityId {
+  get id(): UniqueEntityId | undefined {
     return this._id;
   }
 

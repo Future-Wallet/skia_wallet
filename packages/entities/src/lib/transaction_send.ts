@@ -11,7 +11,7 @@ export interface TransactionSendProps {
 }
 
 export class TransactionSend extends Entity<TransactionSendProps> {
-  get id(): UniqueEntityId {
+  get id(): UniqueEntityId | undefined {
     return this._id;
   }
 
