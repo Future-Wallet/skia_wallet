@@ -1,7 +1,12 @@
 import { UniqueEntityId } from './unique_entity_id';
 
-const isEntity = (v: any): v is Entity<any> => {
+const isEntity = (v: unknown): v is Entity<unknown> => {
   return v instanceof Entity;
+};
+
+export type EntityProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 };
 
 /**
@@ -13,16 +18,17 @@ const isEntity = (v: any): v is Entity<any> => {
  * It cannot exist two entities with the same id. If you prefer to
  * not use an id, then use a `ValueObject`.
  */
-export abstract class Entity<T> {
+// export abstract class Entity<EntityProps> {
+export abstract class Entity<EntityProps> {
   protected readonly _id?: UniqueEntityId;
-  public readonly props: T;
+  public readonly props: EntityProps;
 
-  constructor(props: T, id?: UniqueEntityId) {
+  constructor(props: EntityProps, id?: UniqueEntityId) {
     this._id = id;
     this.props = props;
   }
 
-  public equals(object?: Entity<T>): boolean {
+  public equals(object?: Entity<EntityProps>): boolean {
     if (object == null || object == undefined) {
       return false;
     }
