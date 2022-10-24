@@ -7,4 +7,5 @@
 
 npm test &&
 npm run lint &&
+npm run web:build &&
 npm run check:commit
