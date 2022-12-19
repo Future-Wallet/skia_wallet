@@ -191,8 +191,6 @@ export class UserWallet extends Entity<UserWalletProps> {
           .mnemonicToSeedSync(value)
           .toString('hex');
 
-        console.log(mnemonicPhrase.ok, publicAddress.ok)
-
         if (mnemonicPhrase.ok && publicAddress.ok) {
 
           const accounts: AccountOfWallet[] = _.reduce(

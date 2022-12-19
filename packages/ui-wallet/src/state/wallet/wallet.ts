@@ -26,6 +26,7 @@ export const stateFormMnenomic = atom<FormMnemonicInput>({
 });
 
 
+
 export const stateUserWalletKey = 'state_user_wallet';
 
 /**
@@ -36,8 +37,26 @@ export const stateUserWalletKey = 'state_user_wallet';
 export const stateUserWallet = atom<UserWallet | null>({
   key: stateUserWalletKey,
   default: null,
-  effects: [localStorageRecoil<UserWallet | null>(stateUserWalletKey)],
 });
+
+export const stateUserWalletKeyEncrypted = 'state_user_wallet_encrypted';
+export const stateUserWalletEncrypted = atom<string | null>({
+  key: stateUserWalletKeyEncrypted,
+  default: null,
+  effects: [localStorageRecoil(stateUserWalletKey)],
+});
+
+// const myMultipliedState = selectorFamily({
+//   key: 'MyMultipliedNumber',
+//   get: (multiplier) => ({get}) => {
+//     return get(myNumberState) * multiplier;
+//   },
+
+//   // optional set
+//   set: (multiplier) => ({set}, newValue) => {
+//     set(myNumberState, newValue / multiplier);
+//   },
+// });
 
 export const stateBalanceOfAccountKey = 'state_balance_of_account';
 export const stateBalanceOfAccount = atom<string | null>({
