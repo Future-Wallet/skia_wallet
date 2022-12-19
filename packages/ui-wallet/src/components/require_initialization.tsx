@@ -19,7 +19,6 @@ export default function RequireInitialization({
   const userWalletEncrypted = useRecoilValue(stateUserWalletEncrypted);
   const [userWallet, setUserWallet] = useRecoilState(stateUserWallet);
   const [loadingWallet, setLoadingWallet] = useState(false);
-  // const location = useLocation();
 
   const [password, setPassword] = useState('');
 
@@ -47,10 +46,9 @@ export default function RequireInitialization({
     return (
       <Navigate
         to={`/${routes.initialization}`}
-        state={{ from: location }}
-      // replace  
+        // state={{ from: location }}
+        replace={true}
       />
     )
-    // return children;
   }
 }

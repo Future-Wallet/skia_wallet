@@ -12,22 +12,19 @@ export const localStorageRecoil = (stateKey: string): AtomEffect<string | null> 
     // Get data of the according key.
     const savedValue = storage.getItem(stateKey);
 
-    if (savedValue == null) {
-      onSet(
-        (
-          newValue: string | null,
-          _: string | null | DefaultValue,
-          isReset: boolean
-        ) => {
-          // console.log('onSet', isReset, newValue)
-          isReset
-            ? storage.removeItem(stateKey)
-            : storage.setItem(stateKey, newValue!);
-        }
-      );
-    } else {
-      setSelf(savedValue);
-    }
+    onSet(
+      (
+        newValue: string | null,
+        _: string | null | DefaultValue,
+        isReset: boolean
+      ) => {
+        (isReset || !newValue)
+          ? storage.removeItem(stateKey)
+          : storage.setItem(stateKey, newValue!);
+      }
+    );
+
+    setSelf(savedValue);
   };
 
 
