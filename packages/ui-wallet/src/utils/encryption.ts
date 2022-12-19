@@ -4,13 +4,13 @@ import { Err, Ok, Result } from 'ts-results';
 
 
 export const encryptString = (value: string, password: string) => {
-    var encrypted = AES.encrypt(value, password);
+    const encrypted = AES.encrypt(value, password);
     return encrypted.toString()
 }
 
 export const decryptString = (value: string, password: string): Result<string, null> => {
     try {
-        var encrypted = AES.decrypt(
+        const encrypted = AES.decrypt(
             value.toString(), password);
         return Ok(encrypted.toString(CryptoJS.enc.Utf8))
     } catch (e) {
