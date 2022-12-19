@@ -18,9 +18,9 @@ export default function CreateWallet(): JSX.Element | null {
 
   const handleSetPassword = () => {
     const walletAsJson = JSON.stringify(userWallet)
-    const encryptedWallet = encryptString(walletAsJson, password)
+    const text = encryptString(walletAsJson, password)
 
-    setUserWalletEncrypted(encryptedWallet)
+    setUserWalletEncrypted(text)
     navigate(`/${routes.home}`, { replace: true });
   }
 

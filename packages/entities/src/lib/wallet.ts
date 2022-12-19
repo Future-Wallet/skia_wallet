@@ -25,6 +25,10 @@ export interface AccountOfWalletProps extends EntityProps {
    * In Ethereum world it's `Mnemonic.path`.
    */
   path: string;
+  /**
+   * Index of mnemonic derivation`.
+   */
+  index: number;
 }
 
 export type AccountOfWalletParameters = {
@@ -86,6 +90,7 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
               publicAddress: publicAddress.val,
               privateKey: accountHdNode.unwrap().privateKey,
               path: accountHdNode.val.path,
+              index,
               active,
             })
           );
@@ -114,6 +119,38 @@ export interface UserWalletProps extends EntityProps {
 
 export type UserWalletParameters = {
   mnemonic?: Mnemonic;
+};
+
+
+
+type PlainObject = {
+  props: {
+    mnemonicPhrase: {
+      props: {
+        value: string,
+        locale: string
+      }
+    };
+    publicAddress: { props: { value: string } };
+    seed: { value: string };
+    accounts: [
+      {
+        props: {
+          mnemonicPhrase: {
+            props: {
+              value: string,
+              locale: string
+            }
+          };
+          privateAddress: string;
+          publicAddress: { props: { value: string } };
+          path: string;
+          active: boolean;
+          index: number;
+        };
+      }
+    ];
+  };
 };
 
 /**
@@ -226,6 +263,35 @@ export class UserWallet extends Entity<UserWalletProps> {
     }
 
     return Err(errors);
+  }
+
+  static parse(object: PlainObject): UserWallet | null {
+    const mainWallet = object.props
+    const mainWalletMnemonic = mainWallet.mnemonicPhrase.props
+    const accounts = _.map(mainWallet.accounts, account => {
+      console.log({
+        phrase: account.props.mnemonicPhrase.props.value,
+        locale: account.props.mnemonicPhrase.props.locale as MnemonicLocale,
+        index: account.props.index,
+        active: account.props.active
+      })
+      return AccountOfWallet.create({
+        phrase: account.props.mnemonicPhrase.props.value,
+        locale: account.props.mnemonicPhrase.props.locale as MnemonicLocale,
+        index: account.props.index,
+        active: account.props.active
+      }).unwrap()
+    })
+    return new UserWallet({
+      mnemonicPhrase: Mnemonic.create({
+        value: mainWalletMnemonic.value,
+        locale: mainWalletMnemonic.locale as MnemonicLocale
+      }).unwrap(),
+      seed: mainWallet.seed.value,
+      publicAddress: Address.create(mainWallet.publicAddress.props.value).unwrap(),
+      accounts: accounts
+    })
+
   }
 }
 

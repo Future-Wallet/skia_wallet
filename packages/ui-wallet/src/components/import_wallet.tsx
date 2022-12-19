@@ -21,9 +21,11 @@ export default function ImportWallet(): JSX.Element {
 
   const setWallet = useRecoilTransaction_UNSTABLE(({ set }) => (wallet: UserWallet, password: string) => {
     const walletAsJson = JSON.stringify(wallet)
-    const encryptedWallet = encryptString(walletAsJson, password)
+    console.log('walletAsJson', walletAsJson)
+    const text = encryptString(walletAsJson, password)
 
-    set(stateUserWalletEncrypted, encryptedWallet)
+    // set(stateUserWalletEncryptedIV, iv)
+    set(stateUserWalletEncrypted, text)
     set(stateUserWallet, wallet)
 
   });

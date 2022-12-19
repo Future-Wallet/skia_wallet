@@ -1,9 +1,11 @@
 import { atom, selector } from 'recoil';
 import { UserWallet } from '@skiawallet/entities';
 
-import { localStorageRecoil } from './storage';
+import { localStorageRecoil } from '../storage';
 import { Api } from '@skiawallet/repositories';
 import { Error as CError } from '@skiawallet/common';
+
+import CryptoJS from 'crypto-js'
 
 type FormMnemonicInput = {
   value: string;
@@ -39,11 +41,11 @@ export const stateUserWallet = atom<UserWallet | null>({
   default: null,
 });
 
-export const stateUserWalletKeyEncrypted = 'state_user_wallet_encrypted';
+export const stateUserWalletKeyEncrypted = CryptoJS.MD5('state_user_wallet_encrypted').toString();
 export const stateUserWalletEncrypted = atom<string | null>({
   key: stateUserWalletKeyEncrypted,
   default: null,
-  effects: [localStorageRecoil(stateUserWalletKey)],
+  effects: [localStorageRecoil(stateUserWalletKeyEncrypted)],
 });
 
 // const myMultipliedState = selectorFamily({

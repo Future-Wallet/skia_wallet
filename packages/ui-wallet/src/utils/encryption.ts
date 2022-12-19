@@ -1,14 +1,20 @@
 import AES from 'crypto-js/aes';
 import CryptoJS from 'crypto-js';
+import { Err, Ok, Result } from 'ts-results';
 
 
 export const encryptString = (value: string, password: string) => {
     var encrypted = AES.encrypt(value, password);
-    encrypted.iv
-    return encrypted.ciphertext.toString()
+    return encrypted.toString()
 }
 
-export const decryptString = (value: string, password: string) => {
-    var encrypted = AES.decrypt(value, password);
-    return encrypted.toString(CryptoJS.enc.Utf8);
+export const decryptString = (value: string, password: string): Result<string, null> => {
+    try {
+        var encrypted = AES.decrypt(
+            value.toString(), password);
+        return Ok(encrypted.toString(CryptoJS.enc.Utf8))
+    } catch (e) {
+        return Err(null)
+    }
+
 }
