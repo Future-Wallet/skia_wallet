@@ -18,18 +18,16 @@ export default function RequireInitialization({
 }): JSX.Element {
   const userWalletEncrypted = useRecoilValue(stateUserWalletEncrypted);
   const [userWallet, setUserWallet] = useRecoilState(stateUserWallet);
+  const [loadingWallet, setLoadingWallet] = useState(false);
   // const location = useLocation();
 
   const [password, setPassword] = useState('');
 
   const handleClickToContinue = () => {
-    console.log(userWalletEncrypted);
     const walletDecrypted = decryptString(userWalletEncrypted!, password)
-    // const wallet = JSON.parse()
     if (walletDecrypted.ok) {
-      console.log('walletDecrypted', walletDecrypted.val)
+      setLoadingWallet(true)
       const jsonWallet = JSON.parse(walletDecrypted.val)
-      console.log('jsonWallet', jsonWallet)
       setUserWallet(UserWallet.parse(jsonWallet))
     }
   }
@@ -40,7 +38,7 @@ export default function RequireInitialization({
       return (
         <div>
           <OnboardingPassword onChangeText={setPassword}></OnboardingPassword>
-          <Button onClick={handleClickToContinue} className="mt-6">
+          <Button loading={loadingWallet} onClick={handleClickToContinue} className="mt-6">
             Enter wallet
           </Button>
         </div>

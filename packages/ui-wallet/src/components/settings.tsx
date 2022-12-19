@@ -1,11 +1,12 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { stateUserWallet } from '../state/wallet/wallet';
+import { stateUserWallet, stateUserWalletEncrypted } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
 import Button from './atomic/button';
 
 export default function Settings(): JSX.Element {
-  const [userWallet, setUserWallet] = useRecoilState(stateUserWallet);
+  const [, setUserWalletEncrypted] = useRecoilState(stateUserWalletEncrypted);
+  const userWallet = useRecoilValue(stateUserWallet);
 
   return (
     <div>
@@ -32,7 +33,7 @@ export default function Settings(): JSX.Element {
       <Button
         onClick={() => {
           // Delete data of the `localStorage`
-          setUserWallet(null);
+          setUserWalletEncrypted(null);
         }}
       >
         Delete data

@@ -24,7 +24,6 @@ export default function ImportWallet(): JSX.Element {
     console.log('walletAsJson', walletAsJson)
     const text = encryptString(walletAsJson, password)
 
-    // set(stateUserWalletEncryptedIV, iv)
     set(stateUserWalletEncrypted, text)
     set(stateUserWallet, wallet)
 
