@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { stateUserWallet } from '../state/wallet';
+import { stateUserWallet } from '../state/wallet/wallet';
 import { routes } from '../utils/routes';
 
 export default function RequireInitialization({

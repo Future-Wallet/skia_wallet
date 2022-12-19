@@ -1,6 +1,6 @@
 import { useRecoilState } from 'recoil';
 
-import { stateUserWallet } from '../state/wallet';
+import { stateUserWallet } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
 import Button from './atomic/button';
 

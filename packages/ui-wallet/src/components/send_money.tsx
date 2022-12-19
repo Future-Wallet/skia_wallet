@@ -7,7 +7,7 @@ import { Api, Utils } from '@skiawallet/repositories';
 import {
   stateSelectorBalanceOfAccount,
   stateUserWallet,
-} from '../state/wallet';
+} from '../state/wallet/wallet';
 import Button from './atomic/button';
 import Card from './atomic/card';
 
@@ -19,11 +19,11 @@ type formProps = {
   toPublicAddress: formElementValueProps;
   amount: formElementValueProps;
   transactionStatus:
-    | {
-        status: 'success' | 'error';
-        response: ethers.providers.TransactionResponse | undefined;
-      }
-    | undefined;
+  | {
+    status: 'success' | 'error';
+    response: ethers.providers.TransactionResponse | undefined;
+  }
+  | undefined;
   isSubmitting: boolean;
 };
 
@@ -241,7 +241,7 @@ export default function SendMoney(): JSX.Element {
           {gasPrice !== null ? 'Send now' : 'Loading data...'}
         </Button>
         {form.transactionStatus !== undefined &&
-        form.transactionStatus.status === 'error' ? (
+          form.transactionStatus.status === 'error' ? (
           <p className="ml-3 text-sm text-red-600">
             It couldn't send the money, something went wrong
           </p>

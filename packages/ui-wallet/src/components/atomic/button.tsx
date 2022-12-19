@@ -12,29 +12,11 @@ type ButtonProps = {
 
 export interface ButtonPropsDefault
   extends ButtonProps,
-    React.DetailedHTMLProps<
-      React.ButtonHTMLAttributes<HTMLButtonElement>,
-      HTMLButtonElement
-    >,
-    React.AriaAttributes {}
-
-// export interface ButtonProps
-//   extends React.DetailedHTMLProps<
-//       React.ButtonHTMLAttributes<HTMLButtonElement>,
-//       HTMLButtonElement
-//     >,
-//     React.AriaAttributes,
-//     ButProps {}
-
-// interface Props {
-//   onPressed: () => void;
-// }
-
-// export const Butt: React.FC<Props> = ({
-//   children,
-//   onPressed,
-//   ...props
-// }) => {};
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >,
+  React.AriaAttributes { }
 
 const Button: React.FC<ButtonPropsDefault> = ({
   children,

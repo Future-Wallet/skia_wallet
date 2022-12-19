@@ -9,7 +9,7 @@ import {
 import {
   stateSelectorBalanceOfAccount,
   stateUserWallet,
-} from '../state/wallet';
+} from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
 import Button from './atomic/button';
 import Card from './atomic/card';

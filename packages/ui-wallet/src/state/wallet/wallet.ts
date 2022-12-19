@@ -25,6 +25,7 @@ export const stateFormMnenomic = atom<FormMnemonicInput>({
   },
 });
 
+
 export const stateUserWalletKey = 'state_user_wallet';
 
 /**
@@ -32,11 +33,6 @@ export const stateUserWalletKey = 'state_user_wallet';
  *
  * @returns Instance of `UserWallet` or `null`
  */
-// export const stateUserWallet = atom<UserWallet | null>({
-//   key: stateUserWalletKey,
-//   default: null,
-//   effects: [localStorageRecoil<UserWallet | null>(stateUserWalletKey)],
-// });
 export const stateUserWallet = atom<UserWallet | null>({
   key: stateUserWalletKey,
   default: null,

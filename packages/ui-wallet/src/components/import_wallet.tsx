@@ -1,21 +1,42 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
+import * as _ from 'lodash'
 
-import { stateFormMnenomic, stateUserWallet } from '../state/wallet';
+import { stateFormMnenomic, stateUserWallet } from '../state/wallet/wallet';
 import { routes } from '../utils/routes';
 import { Mnemonic, MnemonicLocale, UserWallet } from '@skiawallet/entities';
 import Button from './atomic/button';
+import OnboardingPassword from './onboarding_password';
+import { encryptString } from '../utils/encryption';
+
 
 export default function ImportWallet(): JSX.Element {
   const navigate = useNavigate();
   const [mnemonicInput, setMemonicInput] = useRecoilState(stateFormMnenomic);
-  const setWalletOfUser = useRecoilState(stateUserWallet);
+  const [, setWalletOfUser] = useRecoilState(stateUserWallet);
   const [importing, setImporting] = useState(false);
+  const [password, setPassword] = useState('');
+  const [userWalletToStore, setUserWalletToStore] = useState<UserWallet | null>(null);
+
+  //User wallets to present
+  // const [userWalletsToImport, setUserWalletsToImport] = useState<ImportedWallet[]>([])
 
   const onChangeTextArea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMemonicInput({ value: event.target.value, error: null });
   };
+
+  const handleSetPassword = () => {
+    console.log('handleSetPassword')
+    console.log('password ==>', password)
+    const walletAsJson = JSON.stringify(userWalletToStore)
+    // const encryptedWallet = encryptString(walletAsJson, password)
+    setWalletOfUser
+    encryptString
+    walletAsJson
+    // setWalletOfUser(encryptedWallet)
+    userWalletToStore
+  }
 
   const handleUserWallet = () => {
     let importedUserWallet;
@@ -37,9 +58,15 @@ export default function ImportWallet(): JSX.Element {
       importedUserWallet = UserWallet.create({ mnemonic: mnemonic.val });
 
       if (importedUserWallet.ok) {
-        setWalletOfUser[1](importedUserWallet.val);
+
+        // setWalletOfUser(importedUserWallet.val);
+        setUserWalletToStore(importedUserWallet.val)
+
+        // console.log('setWalletOfUser', setWalletOfUser)
+
 
         // Redirect to the home screen
+        return
         navigate(`/${routes.home}`, { replace: true });
       } else {
         setMemonicInput({
@@ -78,11 +105,25 @@ export default function ImportWallet(): JSX.Element {
             </p>
           )
         ) : null}
+
+
+
+        {_.isNull(userWalletToStore) ?
+          <div>
+            <OnboardingPassword onChangeText={setPassword}></OnboardingPassword>
+          </div>
+          : <Button loading={importing} onClick={handleUserWallet} className="mt-6">
+            Import your wallet
+          </Button>}
+
+        {password ? (
+          <Button onClick={handleSetPassword} className="mt-6">
+            Set password and continue
+          </Button>
+        ) : null}
       </form>
 
-      <Button loading={importing} onClick={handleUserWallet} className="mt-6">
-        Import your wallet
-      </Button>
+
     </>
   );
 }
