@@ -2,6 +2,7 @@ import { Entity, EntityProps, Error } from '@skiawallet/common';
 import * as bip39 from 'bip39';
 import { utils } from 'ethers';
 import { Err, Ok, Result } from 'ts-results';
+import * as _ from 'lodash';
 
 import { Address } from './address';
 import { Mnemonic, MnemonicLocale } from './mnemonic';
@@ -17,15 +18,24 @@ export interface AccountOfWalletProps extends EntityProps {
    */
   publicAddress: Address;
   /**
+   * Private key to sign`.
+   */
+  privateKey: string;
+  /**
    * In Ethereum world it's `Mnemonic.path`.
    */
   path: string;
+  /**
+   * Index of mnemonic derivation`.
+   */
+  index: number;
 }
 
 export type AccountOfWalletParameters = {
   phrase: string;
   locale: MnemonicLocale;
-  number?: 1;
+  index: number;
+  active: boolean;
 };
 
 export class AccountOfWallet extends Entity<AccountOfWalletProps> {
@@ -49,6 +59,8 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
   public static create({
     phrase,
     locale = MnemonicLocale.en,
+    index,
+    active
   }: AccountOfWalletParameters): Result<
     AccountOfWallet,
     Error<string | number>[]
@@ -65,7 +77,7 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
 
     if (mnemonicPhrase.ok) {
       // For now, we only create the subaccount 0.
-      accountHdNode = createChildOfHdNode(mnemonicPhrase.val.value, 0);
+      accountHdNode = createChildOfHdNode(mnemonicPhrase.val.value, index);
 
       if (accountHdNode.ok) {
         publicAddress = Address.create(accountHdNode.val.address);
@@ -76,7 +88,10 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
             new AccountOfWallet({
               mnemonicPhrase: mnemonicPhrase.val,
               publicAddress: publicAddress.val,
+              privateKey: accountHdNode.unwrap().privateKey,
               path: accountHdNode.val.path,
+              index,
+              active,
             })
           );
         }
@@ -104,6 +119,38 @@ export interface UserWalletProps extends EntityProps {
 
 export type UserWalletParameters = {
   mnemonic?: Mnemonic;
+};
+
+
+
+type PlainObject = {
+  props: {
+    mnemonicPhrase: {
+      props: {
+        value: string,
+        locale: string
+      }
+    };
+    publicAddress: { props: { value: string } };
+    seed: { value: string };
+    accounts: [
+      {
+        props: {
+          mnemonicPhrase: {
+            props: {
+              value: string,
+              locale: string
+            }
+          };
+          privateAddress: string;
+          publicAddress: { props: { value: string } };
+          path: string;
+          active: boolean;
+          index: number;
+        };
+      }
+    ];
+  };
 };
 
 /**
@@ -152,9 +199,8 @@ export class UserWallet extends Entity<UserWalletProps> {
   public static create(
     params?: UserWalletParameters
   ): Result<UserWallet, Error<string | number>[]> {
-    const locale = MnemonicLocale.en,
-      accounts = [];
-    let hdNode, mnemonicPhrase, publicAddress, seed;
+    const locale = MnemonicLocale.en;
+    let hdNode, mnemonicPhrase: Result<Mnemonic, Error<string>[]>, publicAddress, seed;
     const errors: Error<string | number>[] = [];
 
     // It creates automatically a random mnemonic.
@@ -168,25 +214,38 @@ export class UserWallet extends Entity<UserWalletProps> {
     }
 
     if (mnemonicPhrase.ok) {
-      hdNode = createHdNode(mnemonicPhrase.val.value);
+      const {
+        value
+      } = mnemonicPhrase.val
+
+      hdNode = createHdNode(value);
 
       if (hdNode.ok) {
         publicAddress = Address.create(hdNode.val.address);
         if (publicAddress.err) errors.push(...publicAddress.val);
 
         seed = bip39
-          .mnemonicToSeedSync(mnemonicPhrase.val.value)
+          .mnemonicToSeedSync(value)
           .toString('hex');
 
-        const firstAccount = AccountOfWallet.create({
-          phrase: mnemonicPhrase.val.value,
-          locale,
-          number: 1,
-        });
-        if (firstAccount.err) errors.push(...firstAccount.val);
-        else accounts.push(firstAccount.val);
+        if (mnemonicPhrase.ok && publicAddress.ok) {
 
-        if (mnemonicPhrase.ok && publicAddress.ok && firstAccount.ok) {
+          const accounts: AccountOfWallet[] = _.reduce(
+            Array(10).fill(0),
+            (acc: AccountOfWallet[], _: any, index: number) => {
+              //TODO: Change return type to handle failure or retry
+              const walletResult = AccountOfWallet.create({
+                phrase: value,
+                locale,
+                index: index,
+                active: index == 0
+              });
+
+              if (walletResult.ok)
+                return acc.concat([walletResult.val])
+              else return acc
+            }, [])
+
           return Ok(
             new UserWallet({
               mnemonicPhrase: mnemonicPhrase.val,
@@ -204,6 +263,35 @@ export class UserWallet extends Entity<UserWalletProps> {
     }
 
     return Err(errors);
+  }
+
+  static parse(object: PlainObject): UserWallet | null {
+    const mainWallet = object.props
+    const mainWalletMnemonic = mainWallet.mnemonicPhrase.props
+    const accounts = _.map(mainWallet.accounts, account => {
+      console.log({
+        phrase: account.props.mnemonicPhrase.props.value,
+        locale: account.props.mnemonicPhrase.props.locale as MnemonicLocale,
+        index: account.props.index,
+        active: account.props.active
+      })
+      return AccountOfWallet.create({
+        phrase: account.props.mnemonicPhrase.props.value,
+        locale: account.props.mnemonicPhrase.props.locale as MnemonicLocale,
+        index: account.props.index,
+        active: account.props.active
+      }).unwrap()
+    })
+    return new UserWallet({
+      mnemonicPhrase: Mnemonic.create({
+        value: mainWalletMnemonic.value,
+        locale: mainWalletMnemonic.locale as MnemonicLocale
+      }).unwrap(),
+      seed: mainWallet.seed.value,
+      publicAddress: Address.create(mainWallet.publicAddress.props.value).unwrap(),
+      accounts: accounts
+    })
+
   }
 }
 
@@ -241,7 +329,7 @@ function createHdNode(
  */
 function createChildOfHdNode(
   mnemonicPhrase: string,
-  number: 0
+  index: number
 ): Result<
   utils.HDNode,
   ErrorWalletInvalidHdNode | ErrorWalletInvalidDerivationOfHdNode
@@ -254,8 +342,8 @@ function createChildOfHdNode(
 
   // It retrieves the package data of the HDNode.
   try {
-    return Ok(hdNode.val.derivePath(`m/44'/60'/0'/0/${number}`));
+    return Ok(hdNode.val.derivePath(`m/44'/60'/0'/0/${index}`));
   } catch (err) {
-    return Err(new ErrorWalletInvalidDerivationOfHdNode(number));
+    return Err(new ErrorWalletInvalidDerivationOfHdNode(index));
   }
 }

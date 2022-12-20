@@ -2,15 +2,27 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
-import { stateUserWallet } from '../state/wallet';
+import { stateUserWallet, stateUserWalletEncrypted } from '../state/wallet/wallet';
 import { routes } from '../utils/routes';
 import Button from './atomic/button';
 import { UserWallet } from '@skiawallet/entities';
+import OnboardingPassword from './onboarding_password';
+import { encryptString } from '../utils/encryption';
 
 export default function CreateWallet(): JSX.Element | null {
   const navigate = useNavigate();
   const [userWallet, setUserWallet] = useRecoilState(stateUserWallet);
+  const [, setUserWalletEncrypted] = useRecoilState(stateUserWalletEncrypted);
+  const [password, setPassword] = useState('');
   const [creating, setCreating] = useState(false);
+
+  const handleSetPassword = () => {
+    const walletAsJson = JSON.stringify(userWallet)
+    const text = encryptString(walletAsJson, password)
+
+    setUserWalletEncrypted(text)
+    navigate(`/${routes.home}`, { replace: true });
+  }
 
   function handleCreateWallet() {
     setCreating(true);
@@ -47,9 +59,12 @@ export default function CreateWallet(): JSX.Element | null {
             className="mt-2 mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             value={userWallet.mnemonicPhrase.value}
           />
-          <Button onClick={() => navigate(`/${routes.home}`)}>
-            Go to your wallet
-          </Button>
+          <div>
+            <OnboardingPassword onChangeText={setPassword}></OnboardingPassword>
+          </div>
+          {password ? <Button onClick={handleSetPassword} className="mt-6">
+            Set password and continue
+          </Button> : null}
         </>
       ) : null}
     </>
