@@ -1,7 +1,8 @@
-import { UserWallet } from '@skiawallet/entities';
-import { ReactNode, FC, useEffect, useState } from 'react';
+import { Token, UserToken, UserWallet } from '@skiawallet/entities';
+import _ from 'lodash';
+import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import {
-  useRecoilRefresher_UNSTABLE,
+  // useRecoilRefresher_UNSTABLE,
   useRecoilValue,
   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
@@ -11,11 +12,14 @@ import {
   stateUserWallet,
 } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
+import { getDefaultTokenList, getAllTokenList, Network } from '../utils/tokens';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
 import Modal from './atomic/modal';
 import Settings from './settings';
+import { Covalent } from '@skiawallet/repositories'
+import TokenRow from './atomic/token_row';
 
 type WalletAccountProps = {
   className?: string;
@@ -24,110 +28,53 @@ type WalletAccountProps = {
 const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
-  // const walletLoadable = useRecoilValueLoadable<UserWallet | null>(
-  //   stateUserWallet
-  // );
-  // const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
+  const [defaultTokens, setDefaultTokens] = useState<Token[]>([]);
+  const [userTokens, setUserTokens] = useState<UserToken[]>([]);
 
-  // const [balanceOfAccount, setBalanceOfAccount] = useRecoilState(
-  //   stateBalanceOfAccount
-  // );
-  const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
-  // const previousBalanceOfAccount = usePreviousStateRecoil(
-  //   stateSelectorBalanceOfAccount
-  // );
+
+  const getTokens = async () => {
+    try {
+      const defaultTokenList = getDefaultTokenList()
+      const allTokenList = await getAllTokenList(Network.Ethereum)
+      return _.filter(
+        allTokenList, (token: Token) => defaultTokenList[token.address] == true)
+    } catch (e) {
+      return []
+    }
+  }
+  const getDefaultTokens = useMemo(() => getTokens(), [])
+
+  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(1, address), [])
+
+  // const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
+
   const balanceOfAccountLoadable =
     useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
       stateSelectorBalanceOfAccount
     );
-  // const balanceOfAccountSelector = useRecoilValue<string | null>(
-  //   stateSelectorBalanceOfAccount
-  // );
-  // const balanceOfAccount = useRecoilValue<string | null>(stateBalanceOfAccount);
-
-  // const getBalance = useCallback(async () => {
-  //   if (wallet != null) {
-  //     const balance = await Api.getBalance(wallet?.props.firstAccount.address);
-  //     setBalanceOfAccount(balance);
-  //   }
-  // }, [wallet, setBalanceOfAccount]);
 
   // useEffect(() => {
-  //   getBalance();
-  // }, [getBalance]);
-
-  useEffect(() => {
-    refresh();
-
-    // Periodic timer
-    const periodicTimer = setInterval(() => {
-      // balanceOfAccountLoadable.getValue();
-      refresh();
-    }, 10000);
-
-    return () => clearInterval(periodicTimer);
-  }, [refresh]);
-
-  // useRecoilTransaction_UNSTABLE(
-  //   ({ set }) =>
-  //     () => {
-  //       if (walletLoadable.state !== 'hasValue') return;
-
-  //       if (walletLoadable.contents != null) {
-  //         const { props } = walletLoadable.contents;
-  //         const balance = Api.getBalance(props.firstAccount.address);
-  //       }
-
-  //       set(stateBalanceOfAccount)
-  //     },
-  //   [walletLoadable]
-  // );
-
-  // Fetch balance of the account every some seconds.
-  // useEffect(() => {
-  //   async function getBalance(): Promise<void> {
-  //     if (wallet != null) {
-  //       const balance = await Api.getBalance(
-  //         wallet?.props.firstAccount.address
-  //       );
-  //       console.log(balance);
-  //       // setBalanceOfAccount(balance);
-  //     }
-  //   }
-
-  //   getBalance();
-
-  //   // return () => {
-  //   //   getBalance();
-  //   // };
-  // }, []);
-
-  // useEffect(() => {
-  //   // https://beta.reactjs.org/learn/synchronizing-with-effects#fetching-data
-  //   let ignore = false;
-
-  //   async function getBalance() {
-  //     if (wallet != null) {
-  //       const balance = await Api.getBalance(
-  //         wallet?.props.firstAccount.address
-  //       );
-  //       if (!ignore) {
-  //         // console.log(balance);
-  //         setBalanceOfAccount(balance);
-  //       }
-  //     }
-  //   }
+  //   refresh();
 
   //   // Periodic timer
-  //   const periodicTimer = setInterval(async () => {
-  //     await getBalance();
+  //   const periodicTimer = setInterval(() => {
+  //     refresh();
   //   }, 10000);
 
-  //   return () => {
-  //     clearInterval(periodicTimer);
-  //     ignore = true;
-  //   };
-  // }, [wallet, setBalanceOfAccount]);
+  //   return () => clearInterval(periodicTimer);
+  // }, [refresh]);
+
+  useEffect(() => {
+    Promise.all([
+      getDefaultTokens,
+      getUserTokens()('0x6AE70dCA72263A69aD73369c8d27B4dA334653BF')
+    ]).then(result => {
+      const [defaultList, userTokens] = result
+      setDefaultTokens(defaultList)
+      setUserTokens(userTokens)
+    })
+
+  }, [])
 
   async function copyPublicAddressToClipboard() {
     if (wallet !== null && wallet.accounts[0] !== undefined) {
@@ -192,18 +139,25 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
               return `...`;
             else return `${balanceOfAccountLoadable.contents} AVAX`;
           })()}
-          {/* {previousBalanceOfAccount === undefined ? (
-          '...'
-          ) : balanceOfAccountLoadable.state !== 'loading' ? (
-            previousBalanceOfAccount === balanceOfAccountLoadable.contents ? (
-              `${balanceOfAccountLoadable.contents} AVAX`
-              ) : (
-                '...'
-                )
-                ) : (
-                  <i>(error connecting to your data)</i>
-                )} */}
+
         </div>
+        {defaultTokens.map(token => (
+          <TokenRow
+            logoURI={token.logoURI}
+            symbol={token.symbol}
+            name={token.name}
+          ></TokenRow>
+        ))}
+        {userTokens.slice(0, 10).map(token => (
+          <TokenRow
+            logoURI={token.token.logoURI}
+            symbol={token.token.symbol}
+            name={token.token.name}
+            balance={token.balance}
+            price={token.price}
+          ></TokenRow>
+
+        ))}
       </Card>
       {showSettings ? (
         <Modal title="Settings" onClose={() => setShowSettings(false)}>
