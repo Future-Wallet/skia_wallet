@@ -4,11 +4,11 @@ import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react'
 import {
   // useRecoilRefresher_UNSTABLE,
   useRecoilValue,
-  useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
+  // useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 
 import {
-  stateSelectorBalanceOfAccount,
+  // stateSelectorBalanceOfAccount,
   stateUserWallet,
 } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
@@ -49,10 +49,10 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
 
   // const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
 
-  const balanceOfAccountLoadable =
-    useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
-      stateSelectorBalanceOfAccount
-    );
+  // const balanceOfAccountLoadable =
+  //   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
+  //     stateSelectorBalanceOfAccount
+  //   );
 
   // useEffect(() => {
   //   refresh();
@@ -145,6 +145,10 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
     );
   }
 
+  const handleClickToken = (token: UserToken) => {
+    console.log('token', token)
+  }
+
   return (
     <div className={className}>
       <Card title="Your Wallet" actions={[buttonSettings()]}>
@@ -162,10 +166,10 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
         <Button onClick={() => copyPublicAddressToClipboard()}>
           Copy address
         </Button>
-        <div className="mt-5">
-          {/* {balanceOfAccount} */}
-          {/* {balanceOfAccountSelector} */}
-          Balance:{' '}
+        {/* <div className="mt-5"> */}
+        {/* {balanceOfAccount} */}
+        {/* {balanceOfAccountSelector} */}
+        {/* Balance:{' '}
           {(() => {
             const state = balanceOfAccountLoadable.state;
             if (state === 'hasError')
@@ -175,11 +179,12 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
               // return `${previousBalanceOfAccount} AVAX`;
               return `...`;
             else return `${balanceOfAccountLoadable.contents} ETH`;
-          })()}
+          })()} */}
 
-        </div>
+        {/* </div> */}
         {firstTenUserTokens.map(token => (
           <TokenRow
+            onClick={() => handleClickToken(token)}
             key={token.token.address}
             logoURI={token.token.logoURI}
             address={token.token.address}
@@ -193,6 +198,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
         ))}
         {defaultTokens.map(token => (
           <TokenRow
+            onClick={() => handleClickToken(token)}
             key={token.token.address}
             logoURI={token.token.logoURI}
             address={token.token.address}

@@ -7,12 +7,13 @@ interface TokenProps extends HTMLProps<HTMLDivElement> {
     address: string;
     balance?: number;
     price?: number;
+    onClick: () => void;
 }
 
-const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, decimals, price }) => {
+const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, decimals, price, onClick }) => {
     return (
 
-        <div className='flex' style={{ marginBottom: 10 }}>
+        <div className='flex' style={{ marginBottom: 10 }} onClick={onClick}>
             <img className='object-cover' style={{ width: 30, height: 30 }} src={logoURI} />
             <div className='flex flex-col'>
                 <div>{name}</div>
