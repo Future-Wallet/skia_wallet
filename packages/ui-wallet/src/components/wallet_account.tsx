@@ -110,8 +110,6 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
         console.log('handle error', error)
       })
 
-
-
     })
 
   }, [])

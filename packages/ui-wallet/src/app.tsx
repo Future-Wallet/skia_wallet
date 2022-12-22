@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import RequireInitialization from './components/require_initialization';
 import Home from './screens/home';
 import Initialization from './screens/initialization';
+import TokenDetail from './screens/token_detail';
 import { routes } from './utils/routes';
 
 export default function App(): JSX.Element {
@@ -25,6 +26,7 @@ export default function App(): JSX.Element {
         }
       />
       <Route path={`/${routes.initialization}`} element={<Initialization />} />
+      <Route path={`/${routes.tokenDetail}`} element={<TokenDetail />} />
     </Routes>
   );
 }

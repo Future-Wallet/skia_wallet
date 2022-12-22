@@ -1,3 +1,4 @@
+import { Transaction } from '@skiawallet/entities'
 import axios from 'axios'
 import * as _ from 'lodash'
 export class Covalent {
@@ -33,6 +34,26 @@ export class Covalent {
                 },
                 balance: parseInt(item.balance),
                 price: parseInt(item.quote_rate),
+            }
+        })
+    }
+
+    static async getTransactionsForAddress(chainId: number, address: string): Promise<Transaction[]> {
+        const response = await axios.get(`${Covalent.apiAddress}/${chainId}/address/${address}/transactions_v2/`, {
+            params: {
+                'key': Covalent.apiKey,
+            }
+        })
+        const items = response.data['data']['items']
+
+        return _.map(items, transaction => {
+            return {
+                from: transaction.from_address,
+                to: transaction.to_address,
+                logEvents: transaction.log_events,
+                feesPaid: parseInt(transaction.fees_paid),
+                amount: parseInt(transaction.value),
+                txHash: transaction.tx_hash,
             }
         })
     }

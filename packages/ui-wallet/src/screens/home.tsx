@@ -1,11 +1,7 @@
-import { useEffect } from 'react';
 import SendMoney from '../components/send_money';
 import WalletAccount from '../components/wallet_account';
 
 export default function Home(): JSX.Element {
-  useEffect(() => {
-    console.log("HOME?")
-  }, [])
   return (
     <main className="h-screen">
       <div id={Home.name} className="mt-5 h-screen flex flex-col">

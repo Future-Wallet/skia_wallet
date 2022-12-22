@@ -29,6 +29,10 @@ export interface AccountOfWalletProps extends EntityProps {
    * Index of mnemonic derivation`.
    */
   index: number;
+  /**
+   * Indicates active account`.
+   */
+  active: boolean;
 }
 
 export type AccountOfWalletParameters = {
@@ -54,6 +58,9 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
   }
   get path(): string {
     return this.props.path;
+  }
+  get active(): boolean {
+    return this.props.active;
   }
 
   public static create({

@@ -5,3 +5,4 @@ export * from './lib/tokens';
 export * from './lib/transaction_receive';
 export * from './lib/transaction_send';
 export * from './lib/wallet';
+export * from './lib/transaction';
