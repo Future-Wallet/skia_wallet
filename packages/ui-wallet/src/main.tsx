@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+// import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -12,12 +12,12 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <RecoilRoot>
-        <DebugObserver />
-        <App />
-      </RecoilRoot>
-    </BrowserRouter>
-  </StrictMode>
+  // <StrictMode>
+  <BrowserRouter>
+    <RecoilRoot>
+      <DebugObserver />
+      <App />
+    </RecoilRoot>
+  </BrowserRouter>
+  // </StrictMode>
 );

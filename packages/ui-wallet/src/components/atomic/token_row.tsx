@@ -4,6 +4,7 @@ interface TokenProps extends HTMLProps<HTMLDivElement> {
     name: string;
     symbol: string;
     decimals: number;
+    address: string;
     balance?: number;
     price?: number;
 }

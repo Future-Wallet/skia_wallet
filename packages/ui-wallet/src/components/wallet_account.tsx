@@ -1,5 +1,5 @@
 import { Token, UserToken, UserWallet } from '@skiawallet/entities';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import {
   // useRecoilRefresher_UNSTABLE,
@@ -12,7 +12,7 @@ import {
   stateUserWallet,
 } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
-import { getDefaultTokenList, getAllTokenList, Network } from '../utils/tokens';
+import { getDefaultTokenList, getAllTokenList, Network, getTokenPrice } from '../utils/tokens';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
@@ -28,8 +28,9 @@ type WalletAccountProps = {
 const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
-  const [defaultTokens, setDefaultTokens] = useState<Token[]>([]);
-  const [userTokens, setUserTokens] = useState<UserToken[]>([]);
+  const [defaultTokens, setDefaultTokens] = useState<UserToken[]>([]);
+  const [, setUserTokens] = useState<UserToken[]>([]);
+  const [firstTenUserTokens, setFirstTenUserTokens] = useState<UserToken[]>([]);
 
 
   const getTokens = async () => {
@@ -65,15 +66,49 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   // }, [refresh]);
 
   useEffect(() => {
+    // console.log('sdsds')
     Promise.all([
       getDefaultTokens,
       getUserTokens()(wallet?.accounts[0].publicAddress.value || '')
     ]).then(result => {
+
       const [defaultList, userTokens] = result
-      // if (userTokens.length == 0) {
-      // }
+
       setUserTokens(userTokens)
-      setDefaultTokens(defaultList)
+
+      const firstTenUserTokens = _.slice(
+        _.orderBy(userTokens, ['balance'], ['asc']),
+        0, 10)
+
+      const defaultTokensForUser = _.filter(
+        defaultList,
+        token => _.find(
+          firstTenUserTokens,
+          tokenUser => tokenUser.token.address == token.address
+        ) == undefined
+      )
+      Promise.all(
+        _.map(defaultTokensForUser, token => getTokenPrice(token.coingeckoId!))
+      ).then(defaultTokenPrices => {
+        const defaultTokensUser: UserToken[] = _.map(
+          defaultTokensForUser,
+          (token, index) => {
+            const price = defaultTokenPrices[index]
+            return {
+              token: token,
+              balance: 0,
+              price: price ? parseFloat(price) : 0
+            }
+          }
+        )
+        setDefaultTokens(defaultTokensUser)
+        setFirstTenUserTokens(firstTenUserTokens)
+      }).catch(error => {
+        console.log('handle error', error)
+      })
+
+
+
     })
 
   }, [])
@@ -143,17 +178,11 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
           })()}
 
         </div>
-        {defaultTokens.map(token => (
+        {firstTenUserTokens.map(token => (
           <TokenRow
-            decimals={token.decimals}
-            logoURI={token.logoURI}
-            symbol={token.symbol}
-            name={token.name}
-          ></TokenRow>
-        ))}
-        {userTokens.slice(0, 10).map(token => (
-          <TokenRow
+            key={token.token.address}
             logoURI={token.token.logoURI}
+            address={token.token.address}
             symbol={token.token.symbol}
             decimals={token.token.decimals}
             name={token.token.name}
@@ -161,6 +190,18 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
             price={token.price}
           ></TokenRow>
 
+        ))}
+        {defaultTokens.map(token => (
+          <TokenRow
+            key={token.token.address}
+            logoURI={token.token.logoURI}
+            address={token.token.address}
+            symbol={token.token.symbol}
+            decimals={token.token.decimals}
+            name={token.token.name}
+            balance={token.balance}
+            price={token.price}
+          ></TokenRow>
         ))}
       </Card>
       {showSettings ? (

@@ -51,7 +51,7 @@ export type Token = {
   symbol: string,
   decimals: number,
   logoURI: string,
-  coingeckoId: string | undefined
+  coingeckoId: string | undefined,
 }
 
 
