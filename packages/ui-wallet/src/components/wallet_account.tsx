@@ -34,6 +34,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   const [defaultTokens, setDefaultTokens] = useState<UserToken[]>([]);
   const [, setUserTokens] = useState<UserToken[]>([]);
   const [firstTenUserTokens, setFirstTenUserTokens] = useState<UserToken[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
 
   const getTokens = async () => {
@@ -106,6 +107,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
         )
         setDefaultTokens(defaultTokensUser)
         setFirstTenUserTokens(firstTenUserTokens)
+        setIsLoading(false)
       }).catch(error => {
         console.log('handle error', error)
       })
@@ -188,6 +190,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
           })()} */}
 
         {/* </div> */}
+        {isLoading ? <div>Loading...</div> : null}
         {firstTenUserTokens.map(token => (
           <TokenRow
             onClick={() => handleClickToken(token)}
