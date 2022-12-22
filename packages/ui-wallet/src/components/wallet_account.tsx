@@ -1,4 +1,4 @@
-import { Token, UserToken, UserWallet } from '@skiawallet/entities';
+import { Chain, Token, UserToken, UserWallet } from '@skiawallet/entities';
 import * as _ from 'lodash';
 import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import {
@@ -20,12 +20,15 @@ import Modal from './atomic/modal';
 import Settings from './settings';
 import { Covalent } from '@skiawallet/repositories'
 import TokenRow from './atomic/token_row';
+import { useNavigate } from 'react-router-dom';
+import { routes } from '../utils/routes';
 
 type WalletAccountProps = {
   className?: string;
 };
 
 const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
+  const navigate = useNavigate()
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
   const [defaultTokens, setDefaultTokens] = useState<UserToken[]>([]);
@@ -45,7 +48,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   }
   const getDefaultTokens = useMemo(() => getTokens(), [])
 
-  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(1, address), [])
+  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(Chain.Ethereum, address), [])
 
   // const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
 
@@ -147,6 +150,11 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
 
   const handleClickToken = (token: UserToken) => {
     console.log('token', token)
+    navigate(`/${routes.tokenDetail}`, {
+      state: {
+        token
+      }
+    });
   }
 
   return (
