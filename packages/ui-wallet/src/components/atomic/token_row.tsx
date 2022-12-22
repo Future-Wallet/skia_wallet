@@ -19,9 +19,9 @@ const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, decimals, pr
                 <div>{name}</div>
                 <div>{symbol}</div>
             </div>
-            <div className='flex flex-col' style={{ textAlign: 'right' }}>
+            <div className='flex flex-col flex-1' style={{ textAlign: 'right' }}>
                 {balance ? <div>Balance: {balance / Math.pow(10, decimals)}</div> : null}
-                {price ? <div>Price: {price}</div> : null}
+                {price ? <div>Price: ${price}</div> : null}
             </div>
         </div>
 
