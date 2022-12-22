@@ -67,11 +67,13 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   useEffect(() => {
     Promise.all([
       getDefaultTokens,
-      getUserTokens()('0x6AE70dCA72263A69aD73369c8d27B4dA334653BF')
+      getUserTokens()(wallet?.accounts[0].publicAddress.value || '')
     ]).then(result => {
       const [defaultList, userTokens] = result
-      setDefaultTokens(defaultList)
+      // if (userTokens.length == 0) {
+      // }
       setUserTokens(userTokens)
+      setDefaultTokens(defaultList)
     })
 
   }, [])
@@ -137,12 +139,13 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
             else if (state === 'loading')
               // return `${previousBalanceOfAccount} AVAX`;
               return `...`;
-            else return `${balanceOfAccountLoadable.contents} AVAX`;
+            else return `${balanceOfAccountLoadable.contents} ETH`;
           })()}
 
         </div>
         {defaultTokens.map(token => (
           <TokenRow
+            decimals={token.decimals}
             logoURI={token.logoURI}
             symbol={token.symbol}
             name={token.name}
@@ -152,6 +155,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
           <TokenRow
             logoURI={token.token.logoURI}
             symbol={token.token.symbol}
+            decimals={token.token.decimals}
             name={token.token.name}
             balance={token.balance}
             price={token.price}

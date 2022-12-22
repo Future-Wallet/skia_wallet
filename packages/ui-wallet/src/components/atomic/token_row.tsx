@@ -3,11 +3,12 @@ interface TokenProps extends HTMLProps<HTMLDivElement> {
     logoURI: string;
     name: string;
     symbol: string;
+    decimals: number;
     balance?: number;
     price?: number;
 }
 
-const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, price }) => {
+const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, decimals, price }) => {
     return (
 
         <div className='flex' style={{ marginBottom: 10 }}>
@@ -17,7 +18,7 @@ const TokenRow: FC<TokenProps> = ({ logoURI, name, symbol, balance, price }) => 
                 <div>{symbol}</div>
             </div>
             <div className='flex flex-col' style={{ textAlign: 'right' }}>
-                {balance ? <div>Balance: {balance}</div> : null}
+                {balance ? <div>Balance: {balance / Math.pow(10, decimals)}</div> : null}
                 {price ? <div>Price: {price}</div> : null}
             </div>
         </div>

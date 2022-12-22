@@ -13,7 +13,7 @@ export class Covalent {
                 'quote-currency': 'USD',
                 'format': 'JSON',
                 'nft': false,
-                'no-nft-fetch': false,
+                'no-nft-fetch': true,
                 'key': Covalent.apiKey,
             }
         })
