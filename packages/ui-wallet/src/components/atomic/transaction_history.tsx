@@ -11,7 +11,7 @@ const TransactionHistoryRow: FC<TransactionHistoryRowProps> = ({ transaction, to
         <div className='flex' style={{ marginBottom: 10 }}>
             <img className='object-cover' style={{ width: 30, height: 30 }} />
             <div className='flex flex-col'>
-                <a href={`https://etherscan.io/tx/${transaction.txHash}`}><div>tx: {transaction.txHash}</div></a>
+                <a target={'_blank'} href={`https://etherscan.io/tx/${transaction.txHash}`}><div>tx: {transaction.txHash}</div></a>
                 <div>from: {transaction.from}</div>
                 <div>to: {transaction.to}</div>
                 <div>fees: {transaction.feesPaid / Math.pow(10, token.token.decimals)}</div>
