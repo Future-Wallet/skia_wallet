@@ -1,133 +1,120 @@
-import { UserWallet } from '@skiawallet/entities';
-import { ReactNode, FC, useEffect, useState } from 'react';
+import { Chain, Token, UserToken, UserWallet } from '@skiawallet/entities';
+import * as _ from 'lodash';
+import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import {
-  useRecoilRefresher_UNSTABLE,
+  // useRecoilRefresher_UNSTABLE,
   useRecoilValue,
-  useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
+  // useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 
 import {
-  stateSelectorBalanceOfAccount,
+  // stateSelectorBalanceOfAccount,
   stateUserWallet,
 } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
+import { getDefaultTokenList, getAllTokenList, Network, getTokenPrice } from '../utils/tokens';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
 import Modal from './atomic/modal';
 import Settings from './settings';
+import { Covalent } from '@skiawallet/repositories'
+import TokenRow from './atomic/token_row';
+import { useNavigate } from 'react-router-dom';
+import { routes } from '../utils/routes';
 
 type WalletAccountProps = {
   className?: string;
 };
 
 const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
+  const navigate = useNavigate()
   const [showSettings, setShowSettings] = useState(false);
   const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
-  // const walletLoadable = useRecoilValueLoadable<UserWallet | null>(
-  //   stateUserWallet
-  // );
-  // const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
+  const [defaultTokens, setDefaultTokens] = useState<UserToken[]>([]);
+  const [, setUserTokens] = useState<UserToken[]>([]);
+  const [firstTenUserTokens, setFirstTenUserTokens] = useState<UserToken[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  // const [balanceOfAccount, setBalanceOfAccount] = useRecoilState(
-  //   stateBalanceOfAccount
-  // );
-  const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
-  // const previousBalanceOfAccount = usePreviousStateRecoil(
-  //   stateSelectorBalanceOfAccount
-  // );
-  const balanceOfAccountLoadable =
-    useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
-      stateSelectorBalanceOfAccount
-    );
-  // const balanceOfAccountSelector = useRecoilValue<string | null>(
-  //   stateSelectorBalanceOfAccount
-  // );
-  // const balanceOfAccount = useRecoilValue<string | null>(stateBalanceOfAccount);
 
-  // const getBalance = useCallback(async () => {
-  //   if (wallet != null) {
-  //     const balance = await Api.getBalance(wallet?.props.firstAccount.address);
-  //     setBalanceOfAccount(balance);
-  //   }
-  // }, [wallet, setBalanceOfAccount]);
+  const getTokens = async () => {
+    try {
+      const defaultTokenList = getDefaultTokenList()
+      const allTokenList = await getAllTokenList(Network.Ethereum)
+      return _.filter(
+        allTokenList, (token: Token) => defaultTokenList[token.address] == true)
+    } catch (e) {
+      return []
+    }
+  }
+  const getDefaultTokens = useMemo(() => getTokens(), [])
 
-  // useEffect(() => {
-  //   getBalance();
-  // }, [getBalance]);
+  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(Chain.Ethereum, address), [])
 
-  useEffect(() => {
-    refresh();
+  // const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
 
-    // Periodic timer
-    const periodicTimer = setInterval(() => {
-      // balanceOfAccountLoadable.getValue();
-      refresh();
-    }, 10000);
-
-    return () => clearInterval(periodicTimer);
-  }, [refresh]);
-
-  // useRecoilTransaction_UNSTABLE(
-  //   ({ set }) =>
-  //     () => {
-  //       if (walletLoadable.state !== 'hasValue') return;
-
-  //       if (walletLoadable.contents != null) {
-  //         const { props } = walletLoadable.contents;
-  //         const balance = Api.getBalance(props.firstAccount.address);
-  //       }
-
-  //       set(stateBalanceOfAccount)
-  //     },
-  //   [walletLoadable]
-  // );
-
-  // Fetch balance of the account every some seconds.
-  // useEffect(() => {
-  //   async function getBalance(): Promise<void> {
-  //     if (wallet != null) {
-  //       const balance = await Api.getBalance(
-  //         wallet?.props.firstAccount.address
-  //       );
-  //       console.log(balance);
-  //       // setBalanceOfAccount(balance);
-  //     }
-  //   }
-
-  //   getBalance();
-
-  //   // return () => {
-  //   //   getBalance();
-  //   // };
-  // }, []);
+  // const balanceOfAccountLoadable =
+  //   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
+  //     stateSelectorBalanceOfAccount
+  //   );
 
   // useEffect(() => {
-  //   // https://beta.reactjs.org/learn/synchronizing-with-effects#fetching-data
-  //   let ignore = false;
-
-  //   async function getBalance() {
-  //     if (wallet != null) {
-  //       const balance = await Api.getBalance(
-  //         wallet?.props.firstAccount.address
-  //       );
-  //       if (!ignore) {
-  //         // console.log(balance);
-  //         setBalanceOfAccount(balance);
-  //       }
-  //     }
-  //   }
+  //   refresh();
 
   //   // Periodic timer
-  //   const periodicTimer = setInterval(async () => {
-  //     await getBalance();
+  //   const periodicTimer = setInterval(() => {
+  //     refresh();
   //   }, 10000);
 
-  //   return () => {
-  //     clearInterval(periodicTimer);
-  //     ignore = true;
-  //   };
-  // }, [wallet, setBalanceOfAccount]);
+  //   return () => clearInterval(periodicTimer);
+  // }, [refresh]);
+
+  useEffect(() => {
+    // console.log('sdsds')
+    Promise.all([
+      getDefaultTokens,
+      getUserTokens()(wallet?.accounts[0].publicAddress.value || '')
+    ]).then(result => {
+
+      const [defaultList, userTokens] = result
+
+      setUserTokens(userTokens)
+
+      const firstTenUserTokens = _.slice(
+        _.orderBy(userTokens, ['balance'], ['asc']),
+        0, 10)
+
+      const defaultTokensForUser = _.filter(
+        defaultList,
+        token => _.find(
+          firstTenUserTokens,
+          tokenUser => tokenUser.token.address == token.address
+        ) == undefined
+      )
+      Promise.all(
+        _.map(defaultTokensForUser, token => getTokenPrice(token.coingeckoId!))
+      ).then(defaultTokenPrices => {
+        const defaultTokensUser: UserToken[] = _.map(
+          defaultTokensForUser,
+          (token, index) => {
+            const price = defaultTokenPrices[index]
+            return {
+              token: token,
+              balance: 0,
+              price: price ? parseFloat(price) : 0
+            }
+          }
+        )
+        setDefaultTokens(defaultTokensUser)
+        setFirstTenUserTokens(firstTenUserTokens)
+        setIsLoading(false)
+      }).catch(error => {
+        console.log('handle error', error)
+      })
+
+    })
+
+  }, [])
 
   async function copyPublicAddressToClipboard() {
     if (wallet !== null && wallet.accounts[0] !== undefined) {
@@ -161,6 +148,15 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
     );
   }
 
+  const handleClickToken = (token: UserToken) => {
+    console.log('token', token)
+    navigate(`/${routes.tokenDetail}`, {
+      state: {
+        token
+      }
+    });
+  }
+
   return (
     <div className={className}>
       <Card title="Your Wallet" actions={[buttonSettings()]}>
@@ -178,10 +174,10 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
         <Button onClick={() => copyPublicAddressToClipboard()}>
           Copy address
         </Button>
-        <div className="mt-5">
-          {/* {balanceOfAccount} */}
-          {/* {balanceOfAccountSelector} */}
-          Balance:{' '}
+        {/* <div className="mt-5"> */}
+        {/* {balanceOfAccount} */}
+        {/* {balanceOfAccountSelector} */}
+        {/* Balance:{' '}
           {(() => {
             const state = balanceOfAccountLoadable.state;
             if (state === 'hasError')
@@ -190,20 +186,38 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
             else if (state === 'loading')
               // return `${previousBalanceOfAccount} AVAX`;
               return `...`;
-            else return `${balanceOfAccountLoadable.contents} AVAX`;
-          })()}
-          {/* {previousBalanceOfAccount === undefined ? (
-          '...'
-          ) : balanceOfAccountLoadable.state !== 'loading' ? (
-            previousBalanceOfAccount === balanceOfAccountLoadable.contents ? (
-              `${balanceOfAccountLoadable.contents} AVAX`
-              ) : (
-                '...'
-                )
-                ) : (
-                  <i>(error connecting to your data)</i>
-                )} */}
-        </div>
+            else return `${balanceOfAccountLoadable.contents} ETH`;
+          })()} */}
+
+        {/* </div> */}
+        {isLoading ? <div>Loading...</div> : null}
+        {firstTenUserTokens.map(token => (
+          <TokenRow
+            onClick={() => handleClickToken(token)}
+            key={token.token.address}
+            logoURI={token.token.logoURI}
+            address={token.token.address}
+            symbol={token.token.symbol}
+            decimals={token.token.decimals}
+            name={token.token.name}
+            balance={token.balance}
+            price={token.price}
+          ></TokenRow>
+
+        ))}
+        {defaultTokens.map(token => (
+          <TokenRow
+            onClick={() => handleClickToken(token)}
+            key={token.token.address}
+            logoURI={token.token.logoURI}
+            address={token.token.address}
+            symbol={token.token.symbol}
+            decimals={token.token.decimals}
+            name={token.token.name}
+            balance={token.balance}
+            price={token.price}
+          ></TokenRow>
+        ))}
       </Card>
       {showSettings ? (
         <Modal title="Settings" onClose={() => setShowSettings(false)}>

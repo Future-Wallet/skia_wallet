@@ -5,7 +5,8 @@ import { Utils } from './utils';
 
 // Avalanche C-chain testnet Fuji https://docs.avax.network/apis/avalanchego/public-api-server#using-the-public-api-nodes
 // 'https://rpc.ankr.com/avalanche_fuji'
-export const nodeURL = 'https://api.avax-test.network/ext/bc/C/rpc';
+// export const nodeURL = 'https://api.avax-test.network/ext/bc/C/rpc';
+export const nodeURL = 'https://mainnet.infura.io/v3/7b4a7ae02966474bb15d352d45205f09';
 
 export const jsonRpcProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
