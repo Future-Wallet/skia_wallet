@@ -1,4 +1,4 @@
-import { Transaction } from '@skiawallet/entities'
+import { NFT, Transaction } from '@skiawallet/entities'
 import axios from 'axios'
 import * as _ from 'lodash'
 export class Covalent {
@@ -56,5 +56,46 @@ export class Covalent {
                 txHash: transaction.tx_hash,
             }
         })
+    }
+
+    static async getNFTs(chainId: number, address: string): Promise<NFT[]> {
+        const response = await axios.get(`${Covalent.apiAddress}/${chainId}/address/${address}/balances_v2/`, {
+            params: {
+                'quote-currency': 'USD',
+                'format': 'JSON',
+                'nft': true,
+                'no-nft-fetch': false,
+                'key': Covalent.apiKey,
+            }
+        })
+
+        const nfts = _.filter(response.data['data']['items'], x => x.type == 'nft')
+
+        const promises = _.map(nfts, async nft => {
+            const contractAddress = nft.contract_address
+            const tokenId = nft.nft_data[0].token_id
+            const response = await axios.get(`${Covalent.apiAddress}/${chainId}/tokens/${contractAddress}/nft_metadata/${tokenId}/`, {
+                params: {
+                    'quote-currency': 'USD',
+                    'format': 'JSON',
+                    'nft': true,
+                    'no-nft-fetch': false,
+                    'key': Covalent.apiKey,
+                }
+            })
+            const nftDataTop = response.data['data']['items'][0]
+            const nftDataInner = nftDataTop['nft_data'][0]
+            return {
+                contractName: nftDataTop['contract_name'],
+                contractAddress: nftDataTop['contract_address'],
+                tokenId,
+                image: nftDataInner['external_data']['image'],
+                attributes: nftDataInner['external_data']['attributes'],
+                name: nftDataInner['external_data']['name'],
+            }
+        })
+
+        const result = await Promise.all(promises)
+        return result
     }
 }
