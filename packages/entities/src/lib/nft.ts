@@ -4,5 +4,5 @@ export type NFT = {
     tokenId: string;
     image: string;
     name: string;
-    attributes: object;
+    attributes: any[];
 }
