@@ -46,9 +46,9 @@ export default function HomeNFTList({ className }: HomeNFTListProps): JSX.Elemen
                         List of my NFTs
                     </label>
                 </div>
-                {nfts.map(nft => {
+                {nfts.map((nft, index) => {
                     return (
-                        <div style={{ width: 100, height: 150 }} onClick={() => handleClickNFT(nft)}>
+                        <div key={index} style={{ width: 100, height: 150 }} onClick={() => handleClickNFT(nft)}>
                             <img src={nft.image} width={100} height={100} style={{ objectFit: 'cover' }} />
                             <div style={{ fontSize: 11 }}>{nft.contractName} #{nft.name}</div>
                         </div>
