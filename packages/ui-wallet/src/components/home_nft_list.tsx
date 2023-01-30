@@ -3,7 +3,7 @@
 // import {
 //     stateUserWallet,
 // } from '../state/wallet/wallet';
-import { Chain, NFT, UserWallet } from '@skiawallet/entities';
+import { defaultChain, NFT, UserWallet } from '@skiawallet/entities';
 import { Covalent } from '@skiawallet/repositories';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,11 +20,11 @@ export default function HomeNFTList({ className }: HomeNFTListProps): JSX.Elemen
 
     const navigate = useNavigate()
     const wallet = useRecoilValue<UserWallet | null>(stateUserWallet);
-    const getUserNFTs = useCallback(() => (address: string) => Covalent.getNFTs(Chain.Ethereum, address), [])
+    const getUserNFTs = useCallback(() => (address: string) => Covalent.getNFTs(defaultChain, address), [])
     const [nfts, setNfts] = useState<NFT[]>([])
 
     useEffect(() => {
-        getUserNFTs()(wallet?.accounts[0].publicAddress.value || '')
+        getUserNFTs()(wallet!.activeAccount!.publicAddress.value)
             .then(result => {
                 setNfts(result)
             })
