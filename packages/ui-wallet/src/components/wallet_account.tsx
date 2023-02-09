@@ -1,4 +1,4 @@
-import { Chain, Token, UserToken, UserWallet } from '@skiawallet/entities';
+import { defaultChain, Token, UserToken, UserWallet } from '@skiawallet/entities';
 import * as _ from 'lodash';
 import { ReactNode, FC, useEffect, useState, useMemo, useCallback } from 'react';
 import {
@@ -12,7 +12,7 @@ import {
   stateUserWallet,
 } from '../state/wallet/wallet';
 import { copyValueToClipboard } from '../utils/miscellaneous';
-import { getDefaultTokenList, getAllTokenList, Network, getTokenPrice } from '../utils/tokens';
+import { getDefaultTokenList, getAllTokenList, getTokenPrice, defaultNetwork } from '../utils/tokens';
 import Button from './atomic/button';
 import Card from './atomic/card';
 import IconButton from './atomic/icon_button';
@@ -40,7 +40,7 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   const getTokens = async () => {
     try {
       const defaultTokenList = getDefaultTokenList()
-      const allTokenList = await getAllTokenList(Network.Ethereum)
+      const allTokenList = await getAllTokenList(defaultNetwork)
       return _.filter(
         allTokenList, (token: Token) => defaultTokenList[token.address] == true)
     } catch (e) {
@@ -49,28 +49,9 @@ const WalletAccount: FC<WalletAccountProps> = ({ className }) => {
   }
   const getDefaultTokens = useMemo(() => getTokens(), [])
 
-  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(Chain.Ethereum, address), [])
-
-  // const refresh = useRecoilRefresher_UNSTABLE(stateSelectorBalanceOfAccount);
-
-  // const balanceOfAccountLoadable =
-  //   useRecoilValueLoadable_TRANSITION_SUPPORT_UNSTABLE<string | null>(
-  //     stateSelectorBalanceOfAccount
-  //   );
-
-  // useEffect(() => {
-  //   refresh();
-
-  //   // Periodic timer
-  //   const periodicTimer = setInterval(() => {
-  //     refresh();
-  //   }, 10000);
-
-  //   return () => clearInterval(periodicTimer);
-  // }, [refresh]);
+  const getUserTokens = useCallback(() => (address: string) => Covalent.getTokensForAddress(defaultChain, address), [])
 
   useEffect(() => {
-    // console.log('sdsds')
     Promise.all([
       getDefaultTokens,
       getUserTokens()(wallet?.accounts[0].publicAddress.value || '')

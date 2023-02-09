@@ -1,8 +1,9 @@
 import { Entity, EntityProps, Error } from '@skiawallet/common';
 import * as bip39 from 'bip39';
-import { utils } from 'ethers';
+import { utils, Wallet } from 'ethers';
 import { Err, Ok, Result } from 'ts-results';
 import * as _ from 'lodash';
+import { jsonRpcProvider } from '@skiawallet/repositories'
 
 import { Address } from './address';
 import { Mnemonic, MnemonicLocale } from './mnemonic';
@@ -56,6 +57,9 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
   get publicAddress(): Address {
     return this.props.publicAddress;
   }
+  get privateKey(): string {
+    return this.props.privateKey;
+  }
   get path(): string {
     return this.props.path;
   }
@@ -83,7 +87,6 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
     }
 
     if (mnemonicPhrase.ok) {
-      // For now, we only create the subaccount 0.
       accountHdNode = createChildOfHdNode(mnemonicPhrase.val.value, index);
 
       if (accountHdNode.ok) {
@@ -111,6 +114,17 @@ export class AccountOfWallet extends Entity<AccountOfWalletProps> {
 
     return Err(errors);
   }
+
+  getSigner(): Wallet {
+    console.log('this.mnemonicPhrase.value', this.mnemonicPhrase.value)
+    console.log('this.publicAddress', this.publicAddress)
+    console.log('this.privateKey', this.privateKey)
+    return new Wallet(
+      this.privateKey,
+      jsonRpcProvider
+    );
+  }
+
 }
 
 // export interface UserWalletProps extends EntityProps {
@@ -193,6 +207,10 @@ export class UserWallet extends Entity<UserWalletProps> {
 
   get accounts(): AccountOfWallet[] {
     return this.props.accounts;
+  }
+
+  get activeAccount(): AccountOfWallet | undefined {
+    return _.find(this.props.accounts, x => x.active === true);
   }
 
   /**

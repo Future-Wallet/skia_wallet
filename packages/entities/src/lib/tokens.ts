@@ -41,8 +41,12 @@
 
 
 export enum Chain {
-  Ethereum = 1
+  Ethereum = 1,
+  EthereumGoerli = 5
 }
+
+// export let defaultChain: Chain = Chain.Ethereum
+export let defaultChain: Chain = Chain.EthereumGoerli
 
 export type Token = {
   chainId: Chain,

@@ -69,6 +69,8 @@ module.exports = (config) => {
         http: false,
         https: false,
         assert: false,
+        net: false,
+        tls: false,
         // os: require.resolve('os-browserify/browser'),
         // util: require.resolve('util/'),
         // path: require.resolve('path-browserify'),
