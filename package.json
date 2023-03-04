@@ -71,7 +71,7 @@
     "remark": "^14.0.1",
     "remark-html": "^15.0.0",
     "stream-browserify": "^3.0.0",
-    "styled-components": "^5.3.5",
+    "styled-components": "^5.3.7",
     "ts-results": "^3.3.0",
     "tslib": "^2.3.0",
     "twin.macro": "^3.0.0-rc.3",
